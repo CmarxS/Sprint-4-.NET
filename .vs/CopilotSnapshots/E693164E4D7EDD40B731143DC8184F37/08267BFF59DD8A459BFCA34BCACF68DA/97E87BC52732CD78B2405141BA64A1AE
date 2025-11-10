@@ -1,0 +1,235 @@
+﻿using MottoMap.Models;
+using MottoMap.DTOs.Motos;
+using MottoMap.DTOs.Common;
+
+namespace MottoMap.Mappers
+{
+    /// <summary>
+    /// Mapper para conversões entre MotosEntity e DTOs
+    /// </summary>
+    public static class MotoMapper
+    {
+        /// <summary>
+        /// Converte CreateMotoDto para MotosEntity
+        /// </summary>
+        /// <param name="dto">DTO de criação</param>
+        /// <returns>Entidade da moto</returns>
+        public static MotosEntity ToEntity(CreateMotoDto dto)
+        {
+            return new MotosEntity
+            {
+                Marca = dto.Marca,
+                Modelo = dto.Modelo,
+                Ano = dto.Ano,
+                Placa = dto.Placa.ToUpper(), // Garantir que está em maiúsculo
+                IdFilial = dto.IdFilial,
+                Cor = dto.Cor,
+                Quilometragem = dto.Quilometragem
+            };
+        }
+
+        /// <summary>
+        /// Atualiza uma MotosEntity existente com dados do UpdateMotoDto
+        /// </summary>
+        /// <param name="entity">Entidade existente</param>
+        /// <param name="dto">DTO de atualização</param>
+        public static void UpdateEntity(MotosEntity entity, UpdateMotoDto dto)
+        {
+            entity.Marca = dto.Marca;
+            entity.Modelo = dto.Modelo;
+            entity.Ano = dto.Ano;
+            entity.Placa = dto.Placa.ToUpper(); // Garantir que está em maiúsculo
+            entity.IdFilial = dto.IdFilial;
+            entity.Cor = dto.Cor;
+            entity.Quilometragem = dto.Quilometragem;
+        }
+
+        /// <summary>
+        /// Converte MotosEntity para MotoResponseDto
+        /// </summary>
+        /// <param name="entity">Entidade da moto</param>
+        /// <returns>DTO de resposta</returns>
+        public static MotoResponseDto ToResponseDto(MotosEntity entity)
+        {
+            var dto = new MotoResponseDto
+            {
+                IdMoto = entity.IdMoto,
+                Marca = entity.Marca,
+                Modelo = entity.Modelo,
+                Ano = entity.Ano,
+                Placa = entity.Placa,
+                IdFilial = entity.IdFilial,
+                Cor = entity.Cor,
+                Quilometragem = entity.Quilometragem
+            };
+
+            // Mapear filial se estiver carregada
+            if (entity.Filial != null)
+            {
+                dto.Filial = new MotoFilialSummaryDto
+                {
+                    IdFilial = entity.Filial.IdFilial,
+                    Nome = entity.Filial.Nome,
+                    Cidade = entity.Filial.Cidade,
+                    Estado = entity.Filial.Estado
+                };
+            }
+
+            return dto;
+        }
+
+        /// <summary>
+        /// Converte lista de MotosEntity para lista de MotoResponseDto
+        /// </summary>
+        /// <param name="entities">Lista de entidades</param>
+        /// <returns>Lista de DTOs de resposta</returns>
+        public static List<MotoResponseDto> ToResponseDtoList(IEnumerable<MotosEntity> entities)
+        {
+            return entities.Select(ToResponseDto).ToList();
+        }
+
+        /// <summary>
+        /// Converte DataPage de MotosEntity para PagedResponseDto de MotoResponseDto
+        /// </summary>
+        /// <param name="dataPage">Página de dados das entidades</param>
+        /// <returns>Resposta paginada de DTOs</returns>
+        public static PagedResponseDto<MotoResponseDto> ToPagedResponseDto(DataPage<MotosEntity> dataPage)
+        {
+            var dtos = ToResponseDtoList(dataPage.Data);
+            
+            var pagedResponse = new PagedResponseDto<MotoResponseDto>(
+                dtos,
+                dataPage.PageNumber,
+                dataPage.PageSize,
+                dataPage.TotalItems
+            );
+
+            // Copiar links HATEOAS se existirem
+            foreach (var link in dataPage.Links)
+            {
+                pagedResponse.Links[link.Key] = link.Value;
+            }
+
+            return pagedResponse;
+        }
+
+        /// <summary>
+        /// Converte MotosEntity para MotoSummaryDto (para uso em outras entidades)
+        /// </summary>
+        /// <param name="entity">Entidade da moto</param>
+        /// <returns>DTO resumido</returns>
+        public static DTOs.Filial.MotoSummaryDto ToSummaryDto(MotosEntity entity)
+        {
+            return new DTOs.Filial.MotoSummaryDto
+            {
+                IdMoto = entity.IdMoto,
+                Marca = entity.Marca,
+                Modelo = entity.Modelo,
+                Placa = entity.Placa,
+                Ano = entity.Ano
+            };
+        }
+
+        /// <summary>
+        /// Adiciona links HATEOAS ao DTO de resposta da moto
+        /// </summary>
+        /// <param name="dto">DTO de resposta</param>
+        /// <param name="baseUrl">URL base da API</param>
+        public static void AddHateoasLinks(MotoResponseDto dto, string baseUrl)
+        {
+            dto.Links["self"] = $"{baseUrl}/motos/{dto.IdMoto}";
+            dto.Links["update"] = $"{baseUrl}/motos/{dto.IdMoto}";
+            dto.Links["delete"] = $"{baseUrl}/motos/{dto.IdMoto}";
+            dto.Links["filial"] = $"{baseUrl}/filiais/{dto.IdFilial}";
+            dto.Links["all"] = $"{baseUrl}/motos";
+            
+            // Links específicos por marca e ano
+            dto.Links["same_marca"] = $"{baseUrl}/motos?marca={dto.Marca}";
+            dto.Links["same_ano"] = $"{baseUrl}/motos?ano={dto.Ano}";
+        }
+
+        /// <summary>
+        /// Adiciona links HATEOAS a uma lista de DTOs
+        /// </summary>
+        /// <param name="dtos">Lista de DTOs</param>
+        /// <param name="baseUrl">URL base da API</param>
+        public static void AddHateoasLinks(IEnumerable<MotoResponseDto> dtos, string baseUrl)
+        {
+            foreach (var dto in dtos)
+            {
+                AddHateoasLinks(dto, baseUrl);
+            }
+        }
+
+        /// <summary>
+        /// Valida se a placa está no formato correto e a formata adequadamente
+        /// </summary>
+        /// <param name="placa">Placa a ser validada</param>
+        /// <returns>Placa formatada ou a original se inválida</returns>
+        public static string FormatPlaca(string placa)
+        {
+            if (string.IsNullOrWhiteSpace(placa))
+                return placa;
+
+            // Remove espaços e converte para maiúsculo
+            var placaLimpa = placa.Replace(" ", "").Replace("-", "").ToUpper();
+
+            // Formato antigo: ABC1234 -> ABC-1234
+            if (placaLimpa.Length == 7 && char.IsLetter(placaLimpa[0]) && 
+                char.IsLetter(placaLimpa[1]) && char.IsLetter(placaLimpa[2]) &&
+                char.IsDigit(placaLimpa[3]) && char.IsDigit(placaLimpa[4]) &&
+                char.IsDigit(placaLimpa[5]) && char.IsDigit(placaLimpa[6]))
+            {
+                return $"{placaLimpa.Substring(0, 3)}-{placaLimpa.Substring(3, 4)}";
+            }
+
+            // Formato Mercosul: ABC1D23 (já está no formato correto)
+            if (placaLimpa.Length == 7 && char.IsLetter(placaLimpa[0]) && 
+                char.IsLetter(placaLimpa[1]) && char.IsLetter(placaLimpa[2]) &&
+                char.IsDigit(placaLimpa[3]) && char.IsLetter(placaLimpa[4]) &&
+                char.IsDigit(placaLimpa[5]) && char.IsDigit(placaLimpa[6]))
+            {
+                return placaLimpa;
+            }
+
+            // Retorna a placa original se não conseguir formatar
+            return placa.ToUpper();
+        }
+
+        /// <summary>
+        /// Aplica filtros de MotoFilterDto a uma query
+        /// </summary>
+        /// <param name="query">Query base</param>
+        /// <param name="filter">Filtros a serem aplicados</param>
+        /// <returns>Query com filtros aplicados</returns>
+        public static IQueryable<MotosEntity> ApplyFilters(IQueryable<MotosEntity> query, MotoFilterDto filter)
+        {
+            if (!string.IsNullOrWhiteSpace(filter.Marca))
+            {
+                query = query.Where(m => m.Marca.Contains(filter.Marca));
+            }
+
+            if (filter.Ano.HasValue)
+            {
+                query = query.Where(m => m.Ano == filter.Ano.Value);
+            }
+
+            if (filter.IdFilial.HasValue)
+            {
+                query = query.Where(m => m.IdFilial == filter.IdFilial.Value);
+            }
+
+            if (filter.QuilometragemMin.HasValue)
+            {
+                query = query.Where(m => m.Quilometragem >= filter.QuilometragemMin.Value);
+            }
+
+            if (filter.QuilometragemMax.HasValue)
+            {
+                query = query.Where(m => m.Quilometragem <= filter.QuilometragemMax.Value);
+            }
+
+            return query;
+        }
+    }
+}

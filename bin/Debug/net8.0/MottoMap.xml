@@ -1,0 +1,1706 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MottoMap</name>
+    </assembly>
+    <members>
+        <member name="T:MottoMap.Controllers.FiliaisController">
+            <summary>
+            Controller para gerenciamento de filiais
+            </summary>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.GetAllAsync(MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém todas as filiais com paginação
+            </summary>
+            <param name="paginationParameters">Parâmetros de paginação e filtros</param>
+            <returns>Lista paginada de filiais</returns>
+            <remarks>
+            Exemplo de requisição:
+            
+                GET /api/v1/filiais?pageNumber=1&amp;pageSize=10&amp;searchTerm=são paulo&amp;sortBy=cidade
+            
+            Parâmetros de busca disponíveis:
+            - **searchTerm**: Busca por nome, endereço, cidade, estado ou CEP
+            - **sortBy**: Campos disponíveis: nome, endereco, cidade, estado, cep
+            </remarks>
+            <response code="200">Lista de filiais retornada com sucesso</response>
+            <response code="400">Parâmetros de paginação inválidos</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.GetByIdAsync(System.Int32)">
+            <summary>
+            Obtém uma filial específica por ID
+            </summary>
+            <param name="id">ID da filial</param>
+            <returns>Dados da filial</returns>
+            <response code="200">Filial encontrada</response>
+            <response code="404">Filial não encontrada</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.GetDetailsByIdAsync(System.Int32)">
+            <summary>
+            Obtém uma filial com todos os relacionamentos (funcionários e motos)
+            </summary>
+            <param name="id">ID da filial</param>
+            <returns>Dados completos da filial</returns>
+            <response code="200">Filial encontrada com relacionamentos</response>
+            <response code="404">Filial não encontrada</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.CreateAsync(MottoMap.DTOs.Filial.CreateFilialDto)">
+            <summary>
+            Cria uma nova filial
+            </summary>
+            <param name="createDto">Dados da filial a ser criada</param>
+            <returns>Filial criada</returns>
+            <response code="201">Filial criada com sucesso</response>
+            <response code="400">Dados inválidos</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.UpdateAsync(System.Int32,MottoMap.DTOs.Filial.UpdateFilialDto)">
+            <summary>
+            Atualiza uma filial existente
+            </summary>
+            <param name="id">ID da filial</param>
+            <param name="updateDto">Dados atualizados da filial</param>
+            <returns>Filial atualizada</returns>
+            <response code="200">Filial atualizada com sucesso</response>
+            <response code="400">Dados inválidos</response>
+            <response code="404">Filial não encontrada</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.DeleteAsync(System.Int32)">
+            <summary>
+            Remove uma filial
+            </summary>
+            <param name="id">ID da filial</param>
+            <returns>Confirmação de remoção</returns>
+            <response code="204">Filial removida com sucesso</response>
+            <response code="404">Filial não encontrada</response>
+            <response code="409">Filial possui relacionamentos que impedem a remoção</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.GetByCidadeAsync(System.String,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém filiais por cidade
+            </summary>
+            <param name="cidade">Nome da cidade</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Lista paginada de filiais da cidade</returns>
+            <response code="200">Lista de filiais da cidade</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.GetByEstadoAsync(System.String,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém filiais por estado
+            </summary>
+            <param name="estado">Sigla do estado (2 caracteres)</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Lista paginada de filiais do estado</returns>
+            <response code="200">Lista de filiais do estado</response>
+            <response code="400">Estado inválido</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FiliaisController.GetStatsAsync(System.Int32)">
+            <summary>
+            Obtém estatísticas de uma filial
+            </summary>
+            <param name="id">ID da filial</param>
+            <returns>Estatísticas da filial (quantidade de funcionários e motos)</returns>
+            <response code="200">Estatísticas da filial</response>
+            <response code="404">Filial não encontrada</response>
+        </member>
+        <member name="T:MottoMap.Controllers.FuncionariosController">
+            <summary>
+            Controller para gerenciamento de funcionários
+            </summary>
+        </member>
+        <member name="M:MottoMap.Controllers.FuncionariosController.GetAllAsync(MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém todos os funcionários com paginação
+            </summary>
+            <param name="paginationParameters">Parâmetros de paginação e filtros</param>
+            <returns>Lista paginada de funcionários</returns>
+            <remarks>
+            Exemplo de requisição:
+            
+                GET /api/v1/funcionarios?pageNumber=1&amp;pageSize=10&amp;searchTerm=joão&amp;sortBy=nome&amp;sortDirection=asc
+            
+            Parâmetros de busca disponíveis:
+            - **searchTerm**: Busca por nome, email, função ou nome da filial
+            - **sortBy**: Campos disponíveis: nome, email, funcao, filial
+            - **sortDirection**: asc ou desc
+            </remarks>
+            <response code="200">Lista de funcionários retornada com sucesso</response>
+            <response code="400">Parâmetros de paginação inválidos</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FuncionariosController.GetByIdAsync(System.Int32)">
+            <summary>
+            Obtém um funcionário específico por ID
+            </summary>
+            <param name="id">ID do funcionário</param>
+            <returns>Dados do funcionário</returns>
+            <response code="200">Funcionário encontrado</response>
+            <response code="404">Funcionário não encontrado</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FuncionariosController.CreateAsync(MottoMap.DTOs.Funcionario.CreateFuncionarioDto)">
+            <summary>
+            Cria um novo funcionário
+            </summary>
+            <param name="createDto">Dados do funcionário a ser criado</param>
+            <returns>Funcionário criado</returns>
+            <response code="201">Funcionário criado com sucesso</response>
+            <response code="400">Dados inválidos</response>
+            <response code="409">Email já existe</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FuncionariosController.UpdateAsync(System.Int32,MottoMap.DTOs.Funcionario.UpdateFuncionarioDto)">
+            <summary>
+            Atualiza um funcionário existente
+            </summary>
+            <param name="id">ID do funcionário</param>
+            <param name="updateDto">Dados atualizados do funcionário</param>
+            <returns>Funcionário atualizado</returns>
+            <response code="200">Funcionário atualizado com sucesso</response>
+            <response code="400">Dados inválidos</response>
+            <response code="404">Funcionário não encontrado</response>
+            <response code="409">Email já existe</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FuncionariosController.DeleteAsync(System.Int32)">
+            <summary>
+            Remove um funcionário
+            </summary>
+            <param name="id">ID do funcionário</param>
+            <returns>Confirmação de remoção</returns>
+            <response code="204">Funcionário removido com sucesso</response>
+            <response code="404">Funcionário não encontrado</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FuncionariosController.GetByFilialAsync(System.Int32,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém funcionários por filial
+            </summary>
+            <param name="idFilial">ID da filial</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Lista paginada de funcionários da filial</returns>
+            <response code="200">Lista de funcionários da filial</response>
+            <response code="404">Filial não encontrada</response>
+        </member>
+        <member name="M:MottoMap.Controllers.FuncionariosController.GetByEmailAsync(System.String)">
+            <summary>
+            Busca funcionário por email
+            </summary>
+            <param name="email">Email do funcionário</param>
+            <returns>Dados do funcionário</returns>
+            <response code="200">Funcionário encontrado</response>
+            <response code="404">Funcionário não encontrado</response>
+        </member>
+        <member name="T:MottoMap.Controllers.HealthController">
+            <summary>
+            Controller para Health Checks
+            </summary>
+        </member>
+        <member name="M:MottoMap.Controllers.HealthController.GetHealth">
+            <summary>
+            Endpoint básico de health check
+            </summary>
+            <returns>Status da API</returns>
+            <response code="200">API está funcionando</response>
+        </member>
+        <member name="M:MottoMap.Controllers.HealthController.GetDetailedHealth">
+            <summary>
+            Health check detalhado com informações do sistema
+            </summary>
+            <returns>Status detalhado da API</returns>
+            <response code="200">Informações detalhadas do sistema</response>
+        </member>
+        <member name="T:MottoMap.Controllers.MaintenancePredictionController">
+            <summary>
+            Controller para previsões de manutenção usando ML.NET
+            </summary>
+        </member>
+        <member name="M:MottoMap.Controllers.MaintenancePredictionController.PredictMaintenanceByMotoId(System.Int32)">
+            <summary>
+            Prevê necessidade de manutenção para uma moto específica (por ID)
+            </summary>
+            <param name="id">ID da moto</param>
+            <returns>Previsão de manutenção com recomendações</returns>
+            <remarks>
+            Utiliza Machine Learning (ML.NET) para analisar:
+            - Quilometragem atual
+            - Ano de fabricação
+            - Idade da moto
+            
+            E retorna:
+            - Necessidade de manutenção (Sim/Não)
+            - Probabilidade em porcentagem
+            - Prioridade (ALTA, MÉDIA, BAIXA)
+            - Recomendações personalizadas
+            - Quilometragem da próxima revisão
+            </remarks>
+            <response code="200">Previsão realizada com sucesso</response>
+            <response code="404">Moto não encontrada</response>
+            <response code="400">Dados insuficientes para previsão</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MaintenancePredictionController.PredictMaintenance(MottoMap.Controllers.MaintenancePredictionRequest)">
+            <summary>
+            Prevê necessidade de manutenção com dados customizados
+            </summary>
+            <param name="request">Dados para previsão</param>
+            <returns>Previsão de manutenção</returns>
+            <remarks>
+            Permite fazer previsões sem ter uma moto cadastrada.
+            Útil para simulações e análises.
+            
+            Exemplo de requisição:
+            
+                POST /api/v1/maintenanceprediction/predict
+                {
+                  "quilometragem": 25000,
+                  "ano": 2020
+                }
+            
+            </remarks>
+            <response code="200">Previsão realizada com sucesso</response>
+            <response code="400">Dados inválidos</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MaintenancePredictionController.AnalyzeFleet">
+            <summary>
+            Analisa toda a frota e identifica motos que precisam manutenção
+            </summary>
+            <returns>Lista de motos que necessitam manutenção</returns>
+            <remarks>
+            Analisa todas as motos cadastradas e retorna apenas aquelas
+            que o modelo ML prevê necessidade de manutenção.
+            
+            Útil para:
+            - Relatórios gerenciais
+            - Planejamento de manutenções
+            - Gestão de frota
+            </remarks>
+            <response code="200">Análise concluída com sucesso</response>
+        </member>
+        <member name="T:MottoMap.Controllers.MaintenancePredictionRequest">
+            <summary>
+            Request para previsão customizada
+            </summary>
+        </member>
+        <member name="P:MottoMap.Controllers.MaintenancePredictionRequest.Quilometragem">
+            <summary>
+            Quilometragem da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.Controllers.MaintenancePredictionRequest.Ano">
+            <summary>
+            Ano de fabricação
+            </summary>
+        </member>
+        <member name="T:MottoMap.Controllers.MaintenancePredictionResponse">
+            <summary>
+            Response com informações completas da previsão
+            </summary>
+        </member>
+        <member name="T:MottoMap.Controllers.FleetAnalysisResponse">
+            <summary>
+            Response da análise de frota
+            </summary>
+        </member>
+        <member name="T:MottoMap.Controllers.MotosController">
+            <summary>
+            Controller para gerenciamento de motos
+            </summary>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.GetAllAsync(MottoMap.Models.PaginationParameters,MottoMap.DTOs.Motos.MotoFilterDto)">
+            <summary>
+            Obtém todas as motos com paginação e filtros avançados
+            </summary>
+            <param name="paginationParameters">Parâmetros de paginação e busca</param>
+            <param name="filter">Filtros específicos para motos</param>
+            <returns>Lista paginada de motos</returns>
+            <remarks>
+            Exemplo de requisições:
+            
+                GET /api/v1/motos?pageNumber=1&amp;pageSize=10&amp;searchTerm=honda
+                GET /api/v1/motos?marca=Honda&amp;ano=2023&amp;quilometragemMin=1000&amp;quilometragemMax=50000
+            
+            **Filtros disponíveis:**
+            - **marca**: Filtrar por marca específica
+            - **ano**: Filtrar por ano de fabricação
+            - **idFilial**: Filtrar por filial
+            - **quilometragemMin/Max**: Filtrar por faixa de quilometragem
+            
+            **Busca textual (searchTerm):**
+            Busca por marca, modelo, placa, cor ou nome da filial
+            
+            **Ordenação (sortBy):**
+            marca, modelo, ano, placa, cor, quilometragem, filial
+            </remarks>
+            <response code="200">Lista de motos retornada com sucesso</response>
+            <response code="400">Parâmetros inválidos</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.GetByIdAsync(System.Int32)">
+            <summary>
+            Obtém uma moto específica por ID
+            </summary>
+            <param name="id">ID da moto</param>
+            <returns>Dados da moto</returns>
+            <response code="200">Moto encontrada</response>
+            <response code="404">Moto não encontrada</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.CreateAsync(MottoMap.DTOs.Motos.CreateMotoDto)">
+            <summary>
+            Cria uma nova moto
+            </summary>
+            <param name="createDto">Dados da moto a ser criada</param>
+            <returns>Moto criada</returns>
+            <response code="201">Moto criada com sucesso</response>
+            <response code="400">Dados inválidos</response>
+            <response code="409">Placa já existe</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.UpdateAsync(System.Int32,MottoMap.DTOs.Motos.UpdateMotoDto)">
+            <summary>
+            Atualiza uma moto existente
+            </summary>
+            <param name="id">ID da moto</param>
+            <param name="updateDto">Dados atualizados da moto</param>
+            <returns>Moto atualizada</returns>
+            <response code="200">Moto atualizada com sucesso</response>
+            <response code="400">Dados inválidos</response>
+            <response code="404">Moto não encontrada</response>
+            <response code="409">Placa já existe</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.DeleteAsync(System.Int32)">
+            <summary>
+            Remove uma moto
+            </summary>
+            <param name="id">ID da moto</param>
+            <returns>Confirmação de remoção</returns>
+            <response code="204">Moto removida com sucesso</response>
+            <response code="404">Moto não encontrada</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.GetByPlacaAsync(System.String)">
+            <summary>
+            Busca moto por placa
+            </summary>
+            <param name="placa">Placa da moto</param>
+            <returns>Dados da moto</returns>
+            <response code="200">Moto encontrada</response>
+            <response code="404">Moto não encontrada</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.GetByFilialAsync(System.Int32,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém motos por filial
+            </summary>
+            <param name="idFilial">ID da filial</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Lista paginada de motos da filial</returns>
+            <response code="200">Lista de motos da filial</response>
+            <response code="404">Filial não encontrada</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.GetByMarcaAsync(System.String,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém motos por marca
+            </summary>
+            <param name="marca">Marca das motos</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Lista paginada de motos da marca</returns>
+            <response code="200">Lista de motos da marca</response>
+        </member>
+        <member name="M:MottoMap.Controllers.MotosController.GetByAnoAsync(System.Int32,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém motos por ano
+            </summary>
+            <param name="ano">Ano das motos</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Lista paginada de motos do ano</returns>
+            <response code="200">Lista de motos do ano</response>
+            <response code="400">Ano inválido</response>
+        </member>
+        <member name="T:MottoMap.Data.Repository.BaseRepository`1">
+            <summary>
+            Implementação base do repositório genérico
+            </summary>
+            <typeparam name="T">Tipo da entidade</typeparam>
+        </member>
+        <member name="M:MottoMap.Data.Repository.BaseRepository`1.ApplySearch(System.Linq.IQueryable{`0},System.String)">
+            <summary>
+            Método virtual para aplicar busca/filtro - deve ser sobrescrito pelas classes filhas
+            </summary>
+            <param name="query">Query base</param>
+            <param name="searchTerm">Termo de busca</param>
+            <returns>Query com filtro aplicado</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.BaseRepository`1.ApplySort(System.Linq.IQueryable{`0},System.String,System.String)">
+            <summary>
+            Método virtual para aplicar ordenação - deve ser sobrescrito pelas classes filhas
+            </summary>
+            <param name="query">Query base</param>
+            <param name="sortBy">Campo para ordenação</param>
+            <param name="sortDirection">Direção da ordenação</param>
+            <returns>Query com ordenação aplicada</returns>
+        </member>
+        <member name="T:MottoMap.Data.Repository.FilialRepository">
+            <summary>
+            Implementação do repositório de Filiais
+            </summary>
+        </member>
+        <member name="T:MottoMap.Data.Repository.FuncionarioRepository">
+            <summary>
+            Implementação do repositório de Funcionários
+            </summary>
+        </member>
+        <member name="T:MottoMap.Data.Repository.IFilialRepository">
+            <summary>
+            Interface específica para operações do repositório de Filiais
+            </summary>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IFilialRepository.GetByCidadeAsync(System.String,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Busca filiais por cidade
+            </summary>
+            <param name="cidade">Nome da cidade</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de filiais da cidade</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IFilialRepository.GetByEstadoAsync(System.String,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Busca filiais por estado
+            </summary>
+            <param name="estado">Sigla do estado</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de filiais do estado</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IFilialRepository.GetWithRelationsAsync(System.Int32)">
+            <summary>
+            Obtém filial com seus funcionários e motos
+            </summary>
+            <param name="id">ID da filial</param>
+            <returns>Filial com funcionários e motos</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IFilialRepository.GetStatsAsync(System.Int32)">
+            <summary>
+            Obtém estatísticas da filial (quantidade de funcionários e motos)
+            </summary>
+            <param name="id">ID da filial</param>
+            <returns>Objeto com estatísticas da filial</returns>
+        </member>
+        <member name="T:MottoMap.Data.Repository.FilialStatsDto">
+            <summary>
+            DTO para estatísticas da filial
+            </summary>
+        </member>
+        <member name="T:MottoMap.Data.Repository.IFuncionarioRepository">
+            <summary>
+            Interface específica para operações do repositório de Funcionários
+            </summary>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IFuncionarioRepository.GetByFilialAsync(System.Int32,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Busca funcionários por filial
+            </summary>
+            <param name="idFilial">ID da filial</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de funcionários da filial</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IFuncionarioRepository.GetByEmailAsync(System.String)">
+            <summary>
+            Busca funcionário por email
+            </summary>
+            <param name="email">Email do funcionário</param>
+            <returns>Funcionário encontrado ou null</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IFuncionarioRepository.GetByFuncaoAsync(System.String,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Busca funcionários por função
+            </summary>
+            <param name="funcao">Função do funcionário</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de funcionários com a função especificada</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IFuncionarioRepository.EmailExistsAsync(System.String,System.Nullable{System.Int32})">
+            <summary>
+            Verifica se email já existe para outro funcionário
+            </summary>
+            <param name="email">Email a ser verificado</param>
+            <param name="idFuncionarioAtual">ID do funcionário atual (para updates)</param>
+            <returns>True se email já existe</returns>
+        </member>
+        <member name="T:MottoMap.Data.Repository.IMotosRepository">
+            <summary>
+            Interface específica para operações do repositório de Motos
+            </summary>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IMotosRepository.GetByFilialAsync(System.Int32,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Busca motos por filial
+            </summary>
+            <param name="idFilial">ID da filial</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de motos da filial</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IMotosRepository.GetByPlacaAsync(System.String)">
+            <summary>
+            Busca moto por placa
+            </summary>
+            <param name="placa">Placa da moto</param>
+            <returns>Moto encontrada ou null</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IMotosRepository.GetByMarcaAsync(System.String,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Busca motos por marca
+            </summary>
+            <param name="marca">Marca da moto</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de motos da marca</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IMotosRepository.GetByAnoAsync(System.Int32,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Busca motos por ano
+            </summary>
+            <param name="ano">Ano da moto</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de motos do ano</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IMotosRepository.GetByQuilometragemRangeAsync(System.Int32,System.Int32,MottoMap.Models.PaginationParameters)">
+            <summary>
+            Busca motos por faixa de quilometragem
+            </summary>
+            <param name="quilometragemMin">Quilometragem mínima</param>
+            <param name="quilometragemMax">Quilometragem máxima</param>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de motos na faixa de quilometragem</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IMotosRepository.PlacaExistsAsync(System.String,System.Nullable{System.Int32})">
+            <summary>
+            Verifica se placa já existe para outra moto
+            </summary>
+            <param name="placa">Placa a ser verificada</param>
+            <param name="idMotoAtual">ID da moto atual (para updates)</param>
+            <returns>True se placa já existe</returns>
+        </member>
+        <member name="T:MottoMap.Data.Repository.IRepository`1">
+            <summary>
+            Interface genérica para operações básicas de repositório
+            </summary>
+            <typeparam name="T">Tipo da entidade</typeparam>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IRepository`1.GetAllAsync(MottoMap.Models.PaginationParameters)">
+            <summary>
+            Obtém todos os registros com paginação
+            </summary>
+            <param name="paginationParameters">Parâmetros de paginação</param>
+            <returns>Página de dados</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IRepository`1.GetByIdAsync(System.Int32)">
+            <summary>
+            Obtém um registro por ID
+            </summary>
+            <param name="id">ID do registro</param>
+            <returns>Registro encontrado ou null</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IRepository`1.AddAsync(`0)">
+            <summary>
+            Adiciona um novo registro
+            </summary>
+            <param name="entity">Entidade a ser adicionada</param>
+            <returns>Entidade adicionada</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IRepository`1.UpdateAsync(`0)">
+            <summary>
+            Atualiza um registro existente
+            </summary>
+            <param name="entity">Entidade a ser atualizada</param>
+            <returns>Entidade atualizada</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IRepository`1.DeleteAsync(System.Int32)">
+            <summary>
+            Remove um registro por ID
+            </summary>
+            <param name="id">ID do registro a ser removido</param>
+            <returns>True se removido com sucesso</returns>
+        </member>
+        <member name="M:MottoMap.Data.Repository.IRepository`1.ExistsAsync(System.Int32)">
+            <summary>
+            Verifica se um registro existe
+            </summary>
+            <param name="id">ID do registro</param>
+            <returns>True se existe</returns>
+        </member>
+        <member name="T:MottoMap.Data.Repository.MotosRepository">
+            <summary>
+            Implementação do repositório de Motos
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Common.PagedResponseDto`1">
+            <summary>
+            DTO para resposta paginada genérica
+            </summary>
+            <typeparam name="T">Tipo dos dados paginados</typeparam>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PagedResponseDto`1.Data">
+            <summary>
+            Dados da página atual
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PagedResponseDto`1.Pagination">
+            <summary>
+            Informações de paginação
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PagedResponseDto`1.Links">
+            <summary>
+            Links HATEOAS para navegação
+            </summary>
+        </member>
+        <member name="M:MottoMap.DTOs.Common.PagedResponseDto`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Construtor para criar resposta paginada
+            </summary>
+            <param name="data">Dados da página</param>
+            <param name="pageNumber">Número da página atual</param>
+            <param name="pageSize">Tamanho da página</param>
+            <param name="totalItems">Total de itens</param>
+        </member>
+        <member name="M:MottoMap.DTOs.Common.PagedResponseDto`1.#ctor">
+            <summary>
+            Construtor padrão
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Common.PaginationInfoDto">
+            <summary>
+            DTO para informações de paginação
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PaginationInfoDto.PageNumber">
+            <summary>
+            Número da página atual
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PaginationInfoDto.PageSize">
+            <summary>
+            Tamanho da página
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PaginationInfoDto.TotalItems">
+            <summary>
+            Total de itens
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PaginationInfoDto.TotalPages">
+            <summary>
+            Total de páginas
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PaginationInfoDto.HasPreviousPage">
+            <summary>
+            Indica se existe página anterior
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.PaginationInfoDto.HasNextPage">
+            <summary>
+            Indica se existe próxima página
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Common.ErrorResponseDto">
+            <summary>
+            DTO para resposta de erro padronizada
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.ErrorResponseDto.Code">
+            <summary>
+            Código do erro
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.ErrorResponseDto.Message">
+            <summary>
+            Mensagem do erro
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.ErrorResponseDto.Details">
+            <summary>
+            Detalhes adicionais do erro (opcional)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.ErrorResponseDto.ValidationErrors">
+            <summary>
+            Lista de erros de validação (quando aplicável)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.ErrorResponseDto.Timestamp">
+            <summary>
+            Timestamp do erro
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Common.ValidationErrorDto">
+            <summary>
+            DTO para erro de validação
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.ValidationErrorDto.Field">
+            <summary>
+            Nome do campo com erro
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.ValidationErrorDto.Message">
+            <summary>
+            Mensagem do erro de validação
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.ValidationErrorDto.Value">
+            <summary>
+            Valor que causou o erro (opcional)
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Common.SuccessResponseDto">
+            <summary>
+            DTO para resposta de sucesso simples
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.SuccessResponseDto.Message">
+            <summary>
+            Mensagem de sucesso
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.SuccessResponseDto.Data">
+            <summary>
+            Dados adicionais (opcional)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Common.SuccessResponseDto.Timestamp">
+            <summary>
+            Timestamp da operação
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Filial.CreateFilialDto">
+            <summary>
+            DTO para criação de uma nova filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.CreateFilialDto.Nome">
+            <summary>
+            Nome da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.CreateFilialDto.Endereco">
+            <summary>
+            Endereço da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.CreateFilialDto.Cidade">
+            <summary>
+            Cidade da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.CreateFilialDto.Estado">
+            <summary>
+            Estado da filial (sigla)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.CreateFilialDto.CEP">
+            <summary>
+            CEP da filial (opcional)
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Filial.UpdateFilialDto">
+            <summary>
+            DTO para atualização de uma filial existente
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.UpdateFilialDto.Nome">
+            <summary>
+            Nome da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.UpdateFilialDto.Endereco">
+            <summary>
+            Endereço da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.UpdateFilialDto.Cidade">
+            <summary>
+            Cidade da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.UpdateFilialDto.Estado">
+            <summary>
+            Estado da filial (sigla)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.UpdateFilialDto.CEP">
+            <summary>
+            CEP da filial (opcional)
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Filial.FilialResponseDto">
+            <summary>
+            DTO para resposta de filial (dados básicos)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialResponseDto.IdFilial">
+            <summary>
+            ID único da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialResponseDto.Nome">
+            <summary>
+            Nome da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialResponseDto.Endereco">
+            <summary>
+            Endereço da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialResponseDto.Cidade">
+            <summary>
+            Cidade da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialResponseDto.Estado">
+            <summary>
+            Estado da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialResponseDto.CEP">
+            <summary>
+            CEP da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialResponseDto.Links">
+            <summary>
+            Links HATEOAS para operações relacionadas
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Filial.FilialDetailResponseDto">
+            <summary>
+            DTO para resposta detalhada da filial com relacionamentos
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialDetailResponseDto.Funcionarios">
+            <summary>
+            Funcionários da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialDetailResponseDto.Motos">
+            <summary>
+            Motos da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialDetailResponseDto.Stats">
+            <summary>
+            Estatísticas da filial
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Filial.FuncionarioSummaryDto">
+            <summary>
+            DTO resumido do funcionário para ser usado em FilialDetailResponseDto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FuncionarioSummaryDto.IdFuncionario">
+            <summary>
+            ID do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FuncionarioSummaryDto.Nome">
+            <summary>
+            Nome do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FuncionarioSummaryDto.Email">
+            <summary>
+            Email do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FuncionarioSummaryDto.Funcao">
+            <summary>
+            Função do funcionário
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Filial.MotoSummaryDto">
+            <summary>
+            DTO resumido da moto para ser usado em FilialDetailResponseDto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.MotoSummaryDto.IdMoto">
+            <summary>
+            ID da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.MotoSummaryDto.Marca">
+            <summary>
+            Marca da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.MotoSummaryDto.Modelo">
+            <summary>
+            Modelo da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.MotoSummaryDto.Placa">
+            <summary>
+            Placa da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.MotoSummaryDto.Ano">
+            <summary>
+            Ano da moto
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Filial.FilialStatsDto">
+            <summary>
+            DTO para estatísticas da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialStatsDto.TotalFuncionarios">
+            <summary>
+            Total de funcionários na filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Filial.FilialStatsDto.TotalMotos">
+            <summary>
+            Total de motos na filial
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Funcionario.CreateFuncionarioDto">
+            <summary>
+            DTO para criação de um novo funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.CreateFuncionarioDto.Nome">
+            <summary>
+            Nome do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.CreateFuncionarioDto.Email">
+            <summary>
+            Email do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.CreateFuncionarioDto.IdFilial">
+            <summary>
+            ID da filial onde o funcionário trabalha
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.CreateFuncionarioDto.Funcao">
+            <summary>
+            Função do funcionário
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Funcionario.UpdateFuncionarioDto">
+            <summary>
+            DTO para atualização de um funcionário existente
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.UpdateFuncionarioDto.Nome">
+            <summary>
+            Nome do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.UpdateFuncionarioDto.Email">
+            <summary>
+            Email do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.UpdateFuncionarioDto.IdFilial">
+            <summary>
+            ID da filial onde o funcionário trabalha
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.UpdateFuncionarioDto.Funcao">
+            <summary>
+            Função do funcionário
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Funcionario.FuncionarioResponseDto">
+            <summary>
+            DTO para resposta de funcionário (dados completos)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FuncionarioResponseDto.IdFuncionario">
+            <summary>
+            ID único do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FuncionarioResponseDto.Nome">
+            <summary>
+            Nome do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FuncionarioResponseDto.Email">
+            <summary>
+            Email do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FuncionarioResponseDto.IdFilial">
+            <summary>
+            ID da filial onde o funcionário trabalha
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FuncionarioResponseDto.Funcao">
+            <summary>
+            Função do funcionário
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FuncionarioResponseDto.Filial">
+            <summary>
+            Informações da filial (se incluída)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FuncionarioResponseDto.Links">
+            <summary>
+            Links HATEOAS para operações relacionadas
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Funcionario.FilialSummaryDto">
+            <summary>
+            DTO resumido da filial para ser usado em FuncionarioResponseDto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FilialSummaryDto.IdFilial">
+            <summary>
+            ID da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FilialSummaryDto.Nome">
+            <summary>
+            Nome da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FilialSummaryDto.Cidade">
+            <summary>
+            Cidade da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Funcionario.FilialSummaryDto.Estado">
+            <summary>
+            Estado da filial
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Motos.CreateMotoDto">
+            <summary>
+            DTO para criação de uma nova moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.CreateMotoDto.Marca">
+            <summary>
+            Marca da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.CreateMotoDto.Modelo">
+            <summary>
+            Modelo da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.CreateMotoDto.Ano">
+            <summary>
+            Ano de fabricação da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.CreateMotoDto.Placa">
+            <summary>
+            Placa da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.CreateMotoDto.IdFilial">
+            <summary>
+            ID da filial onde a moto está alocada
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.CreateMotoDto.Cor">
+            <summary>
+            Cor da moto (opcional)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.CreateMotoDto.Quilometragem">
+            <summary>
+            Quilometragem atual da moto (opcional)
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Motos.UpdateMotoDto">
+            <summary>
+            DTO para atualização de uma moto existente
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.UpdateMotoDto.Marca">
+            <summary>
+            Marca da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.UpdateMotoDto.Modelo">
+            <summary>
+            Modelo da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.UpdateMotoDto.Ano">
+            <summary>
+            Ano de fabricação da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.UpdateMotoDto.Placa">
+            <summary>
+            Placa da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.UpdateMotoDto.IdFilial">
+            <summary>
+            ID da filial onde a moto está alocada
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.UpdateMotoDto.Cor">
+            <summary>
+            Cor da moto (opcional)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.UpdateMotoDto.Quilometragem">
+            <summary>
+            Quilometragem atual da moto (opcional)
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Motos.MotoResponseDto">
+            <summary>
+            DTO para resposta de moto (dados completos)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.IdMoto">
+            <summary>
+            ID único da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.Marca">
+            <summary>
+            Marca da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.Modelo">
+            <summary>
+            Modelo da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.Ano">
+            <summary>
+            Ano de fabricação da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.Placa">
+            <summary>
+            Placa da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.IdFilial">
+            <summary>
+            ID da filial onde a moto está alocada
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.Cor">
+            <summary>
+            Cor da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.Quilometragem">
+            <summary>
+            Quilometragem atual da moto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.Filial">
+            <summary>
+            Informações da filial (se incluída)
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoResponseDto.Links">
+            <summary>
+            Links HATEOAS para operações relacionadas
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Motos.MotoFilialSummaryDto">
+            <summary>
+            DTO resumido da filial para ser usado em MotoResponseDto
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilialSummaryDto.IdFilial">
+            <summary>
+            ID da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilialSummaryDto.Nome">
+            <summary>
+            Nome da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilialSummaryDto.Cidade">
+            <summary>
+            Cidade da filial
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilialSummaryDto.Estado">
+            <summary>
+            Estado da filial
+            </summary>
+        </member>
+        <member name="T:MottoMap.DTOs.Motos.MotoFilterDto">
+            <summary>
+            DTO para filtros específicos de motos
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilterDto.Marca">
+            <summary>
+            Filtrar por marca
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilterDto.Ano">
+            <summary>
+            Filtrar por ano específico
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilterDto.QuilometragemMin">
+            <summary>
+            Filtrar por faixa de quilometragem mínima
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilterDto.QuilometragemMax">
+            <summary>
+            Filtrar por faixa de quilometragem máxima
+            </summary>
+        </member>
+        <member name="P:MottoMap.DTOs.Motos.MotoFilterDto.IdFilial">
+            <summary>
+            Filtrar por filial específica
+            </summary>
+        </member>
+        <member name="T:MottoMap.Mappers.FilialMapper">
+            <summary>
+            Mapper para conversões entre FilialEntity e DTOs
+            </summary>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.ToEntity(MottoMap.DTOs.Filial.CreateFilialDto)">
+            <summary>
+            Converte CreateFilialDto para FilialEntity
+            </summary>
+            <param name="dto">DTO de criação</param>
+            <returns>Entidade da filial</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.UpdateEntity(MottoMap.Models.FilialEntity,MottoMap.DTOs.Filial.UpdateFilialDto)">
+            <summary>
+            Atualiza uma FilialEntity existente com dados do UpdateFilialDto
+            </summary>
+            <param name="entity">Entidade existente</param>
+            <param name="dto">DTO de atualização</param>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.ToResponseDto(MottoMap.Models.FilialEntity)">
+            <summary>
+            Converte FilialEntity para FilialResponseDto (básico)
+            </summary>
+            <param name="entity">Entidade da filial</param>
+            <returns>DTO de resposta básico</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.ToDetailResponseDto(MottoMap.Models.FilialEntity)">
+            <summary>
+            Converte FilialEntity para FilialDetailResponseDto (com relacionamentos)
+            </summary>
+            <param name="entity">Entidade da filial com relacionamentos carregados</param>
+            <returns>DTO de resposta detalhado</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.ToResponseDtoList(System.Collections.Generic.IEnumerable{MottoMap.Models.FilialEntity})">
+            <summary>
+            Converte lista de FilialEntity para lista de FilialResponseDto
+            </summary>
+            <param name="entities">Lista de entidades</param>
+            <returns>Lista de DTOs de resposta</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.ToPagedResponseDto(MottoMap.Models.DataPage{MottoMap.Models.FilialEntity})">
+            <summary>
+            Converte DataPage de FilialEntity para PagedResponseDto de FilialResponseDto
+            </summary>
+            <param name="dataPage">Página de dados das entidades</param>
+            <returns>Resposta paginada de DTOs</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.ToSummaryDto(MottoMap.Models.FilialEntity)">
+            <summary>
+            Converte FilialEntity para FilialSummaryDto (para uso em outras entidades)
+            </summary>
+            <param name="entity">Entidade da filial</param>
+            <returns>DTO resumido</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.ToMotoFilialSummaryDto(MottoMap.Models.FilialEntity)">
+            <summary>
+            Converte FilialEntity para FilialSummaryDto para Motos
+            </summary>
+            <param name="entity">Entidade da filial</param>
+            <returns>DTO resumido para uso em Motos</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.AddHateoasLinks(MottoMap.DTOs.Filial.FilialResponseDto,System.String)">
+            <summary>
+            Adiciona links HATEOAS ao DTO de resposta da filial
+            </summary>
+            <param name="dto">DTO de resposta</param>
+            <param name="baseUrl">URL base da API</param>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.AddHateoasLinks(MottoMap.DTOs.Filial.FilialDetailResponseDto,System.String)">
+            <summary>
+            Adiciona links HATEOAS ao DTO de resposta detalhado da filial
+            </summary>
+            <param name="dto">DTO de resposta detalhado</param>
+            <param name="baseUrl">URL base da API</param>
+        </member>
+        <member name="M:MottoMap.Mappers.FilialMapper.AddHateoasLinks(System.Collections.Generic.IEnumerable{MottoMap.DTOs.Filial.FilialResponseDto},System.String)">
+            <summary>
+            Adiciona links HATEOAS a uma lista de DTOs
+            </summary>
+            <param name="dtos">Lista de DTOs</param>
+            <param name="baseUrl">URL base da API</param>
+        </member>
+        <member name="T:MottoMap.Mappers.FuncionarioMapper">
+            <summary>
+            Mapper para conversões entre FuncionarioEntity e DTOs
+            </summary>
+        </member>
+        <member name="M:MottoMap.Mappers.FuncionarioMapper.ToEntity(MottoMap.DTOs.Funcionario.CreateFuncionarioDto)">
+            <summary>
+            Converte CreateFuncionarioDto para FuncionarioEntity
+            </summary>
+            <param name="dto">DTO de criação</param>
+            <returns>Entidade do funcionário</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FuncionarioMapper.UpdateEntity(MottoMap.Models.FuncionarioEntity,MottoMap.DTOs.Funcionario.UpdateFuncionarioDto)">
+            <summary>
+            Atualiza uma FuncionarioEntity existente com dados do UpdateFuncionarioDto
+            </summary>
+            <param name="entity">Entidade existente</param>
+            <param name="dto">DTO de atualização</param>
+        </member>
+        <member name="M:MottoMap.Mappers.FuncionarioMapper.ToResponseDto(MottoMap.Models.FuncionarioEntity)">
+            <summary>
+            Converte FuncionarioEntity para FuncionarioResponseDto
+            </summary>
+            <param name="entity">Entidade do funcionário</param>
+            <returns>DTO de resposta</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FuncionarioMapper.ToResponseDtoList(System.Collections.Generic.IEnumerable{MottoMap.Models.FuncionarioEntity})">
+            <summary>
+            Converte lista de FuncionarioEntity para lista de FuncionarioResponseDto
+            </summary>
+            <param name="entities">Lista de entidades</param>
+            <returns>Lista de DTOs de resposta</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FuncionarioMapper.ToPagedResponseDto(MottoMap.Models.DataPage{MottoMap.Models.FuncionarioEntity})">
+            <summary>
+            Converte DataPage de FuncionarioEntity para PagedResponseDto de FuncionarioResponseDto
+            </summary>
+            <param name="dataPage">Página de dados das entidades</param>
+            <returns>Resposta paginada de DTOs</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FuncionarioMapper.ToSummaryDto(MottoMap.Models.FuncionarioEntity)">
+            <summary>
+            Converte FuncionarioEntity para FuncionarioSummaryDto (para uso em outras entidades)
+            </summary>
+            <param name="entity">Entidade do funcionário</param>
+            <returns>DTO resumido</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.FuncionarioMapper.AddHateoasLinks(MottoMap.DTOs.Funcionario.FuncionarioResponseDto,System.String)">
+            <summary>
+            Adiciona links HATEOAS ao DTO de resposta do funcionário
+            </summary>
+            <param name="dto">DTO de resposta</param>
+            <param name="baseUrl">URL base da API</param>
+        </member>
+        <member name="M:MottoMap.Mappers.FuncionarioMapper.AddHateoasLinks(System.Collections.Generic.IEnumerable{MottoMap.DTOs.Funcionario.FuncionarioResponseDto},System.String)">
+            <summary>
+            Adiciona links HATEOAS a uma lista de DTOs
+            </summary>
+            <param name="dtos">Lista de DTOs</param>
+            <param name="baseUrl">URL base da API</param>
+        </member>
+        <member name="T:MottoMap.Mappers.MotoMapper">
+            <summary>
+            Mapper para conversões entre MotosEntity e DTOs
+            </summary>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.ToEntity(MottoMap.DTOs.Motos.CreateMotoDto)">
+            <summary>
+            Converte CreateMotoDto para MotosEntity
+            </summary>
+            <param name="dto">DTO de criação</param>
+            <returns>Entidade da moto</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.UpdateEntity(MottoMap.Models.MotosEntity,MottoMap.DTOs.Motos.UpdateMotoDto)">
+            <summary>
+            Atualiza uma MotosEntity existente com dados do UpdateMotoDto
+            </summary>
+            <param name="entity">Entidade existente</param>
+            <param name="dto">DTO de atualização</param>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.ToResponseDto(MottoMap.Models.MotosEntity)">
+            <summary>
+            Converte MotosEntity para MotoResponseDto
+            </summary>
+            <param name="entity">Entidade da moto</param>
+            <returns>DTO de resposta</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.ToResponseDtoList(System.Collections.Generic.IEnumerable{MottoMap.Models.MotosEntity})">
+            <summary>
+            Converte lista de MotosEntity para lista de MotoResponseDto
+            </summary>
+            <param name="entities">Lista de entidades</param>
+            <returns>Lista de DTOs de resposta</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.ToPagedResponseDto(MottoMap.Models.DataPage{MottoMap.Models.MotosEntity})">
+            <summary>
+            Converte DataPage de MotosEntity para PagedResponseDto de MotoResponseDto
+            </summary>
+            <param name="dataPage">Página de dados das entidades</param>
+            <returns>Resposta paginada de DTOs</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.ToSummaryDto(MottoMap.Models.MotosEntity)">
+            <summary>
+            Converte MotosEntity para MotoSummaryDto (para uso em outras entidades)
+            </summary>
+            <param name="entity">Entidade da moto</param>
+            <returns>DTO resumido</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.AddHateoasLinks(MottoMap.DTOs.Motos.MotoResponseDto,System.String)">
+            <summary>
+            Adiciona links HATEOAS ao DTO de resposta da moto
+            </summary>
+            <param name="dto">DTO de resposta</param>
+            <param name="baseUrl">URL base da API</param>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.AddHateoasLinks(System.Collections.Generic.IEnumerable{MottoMap.DTOs.Motos.MotoResponseDto},System.String)">
+            <summary>
+            Adiciona links HATEOAS a uma lista de DTOs
+            </summary>
+            <param name="dtos">Lista de DTOs</param>
+            <param name="baseUrl">URL base da API</param>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.FormatPlaca(System.String)">
+            <summary>
+            Valida se a placa está no formato correto e a formata adequadamente
+            </summary>
+            <param name="placa">Placa a ser validada</param>
+            <returns>Placa formatada ou a original se inválida</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.MotoMapper.ApplyFilters(System.Linq.IQueryable{MottoMap.Models.MotosEntity},MottoMap.DTOs.Motos.MotoFilterDto)">
+            <summary>
+            Aplica filtros de MotoFilterDto a uma query
+            </summary>
+            <param name="query">Query base</param>
+            <param name="filter">Filtros a serem aplicados</param>
+            <returns>Query com filtros aplicados</returns>
+        </member>
+        <member name="T:MottoMap.Mappers.PaginationMapper">
+            <summary>
+            Mapper utilitário para conversões genéricas de paginação
+            </summary>
+        </member>
+        <member name="M:MottoMap.Mappers.PaginationMapper.ToPagedResponseDto``2(MottoMap.Models.DataPage{``0},System.Func{``0,``1})">
+            <summary>
+            Converte DataPage genérico para PagedResponseDto usando uma função de mapeamento
+            </summary>
+            <typeparam name="TEntity">Tipo da entidade</typeparam>
+            <typeparam name="TDto">Tipo do DTO</typeparam>
+            <param name="dataPage">Página de dados das entidades</param>
+            <param name="mapFunction">Função para mapear entidade para DTO</param>
+            <returns>Resposta paginada de DTOs</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.PaginationMapper.AddNavigationLinks``1(MottoMap.DTOs.Common.PagedResponseDto{``0},System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Adiciona links de navegação HATEOAS para paginação
+            </summary>
+            <typeparam name="T">Tipo do DTO</typeparam>
+            <param name="pagedResponse">Resposta paginada</param>
+            <param name="baseUrl">URL base do endpoint</param>
+            <param name="additionalParams">Parâmetros adicionais para manter na URL</param>
+        </member>
+        <member name="M:MottoMap.Mappers.PaginationMapper.BuildQueryString(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Constrói query string a partir de parâmetros adicionais
+            </summary>
+            <param name="parameters">Dicionário de parâmetros</param>
+            <returns>Query string formatada</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.PaginationMapper.CreateError(System.String,System.String,System.String)">
+            <summary>
+            Cria uma resposta de erro padronizada
+            </summary>
+            <param name="code">Código do erro</param>
+            <param name="message">Mensagem do erro</param>
+            <param name="details">Detalhes adicionais (opcional)</param>
+            <returns>DTO de erro</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.PaginationMapper.CreateValidationError(System.Collections.Generic.List{MottoMap.DTOs.Common.ValidationErrorDto})">
+            <summary>
+            Cria uma resposta de erro de validação
+            </summary>
+            <param name="validationErrors">Lista de erros de validação</param>
+            <returns>DTO de erro com validações</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.PaginationMapper.CreateSuccess(System.String,System.Object)">
+            <summary>
+            Cria uma resposta de sucesso simples
+            </summary>
+            <param name="message">Mensagem de sucesso</param>
+            <param name="data">Dados adicionais (opcional)</param>
+            <returns>DTO de sucesso</returns>
+        </member>
+        <member name="M:MottoMap.Mappers.PaginationMapper.ToQueryParameters(MottoMap.Models.PaginationParameters)">
+            <summary>
+            Converte PaginationParameters para Dictionary para uso em query strings
+            </summary>
+            <param name="parameters">Parâmetros de paginação</param>
+            <returns>Dictionary com parâmetros</returns>
+        </member>
+        <member name="T:MottoMap.Middleware.ApiKeyMiddleware">
+            <summary>
+            Middleware para validação de API Key
+            </summary>
+        </member>
+        <member name="T:MottoMap.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:MottoMap.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MottoMap.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MottoMap.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:MottoMap.Models.DataPage`1">
+            <summary>
+            Classe genérica para representar dados paginados
+            </summary>
+            <typeparam name="T">Tipo dos dados a serem paginados</typeparam>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.Data">
+            <summary>
+            Lista dos itens da página atual
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.PageNumber">
+            <summary>
+            Número da página atual (baseado em 1)
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.PageSize">
+            <summary>
+            Quantidade de itens por página
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.TotalItems">
+            <summary>
+            Total de itens em todas as páginas
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.TotalPages">
+            <summary>
+            Total de páginas disponíveis
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.HasPreviousPage">
+            <summary>
+            Indica se existe uma página anterior
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.HasNextPage">
+            <summary>
+            Indica se existe uma próxima página
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.FirstPage">
+            <summary>
+            Número da primeira página
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.LastPage">
+            <summary>
+            Número da última página
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.DataPage`1.Links">
+            <summary>
+            Links HATEOAS para navegação
+            </summary>
+        </member>
+        <member name="M:MottoMap.Models.DataPage`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Construtor para criar uma página de dados
+            </summary>
+            <param name="data">Dados da página atual</param>
+            <param name="pageNumber">Número da página atual</param>
+            <param name="pageSize">Tamanho da página</param>
+            <param name="totalItems">Total de itens</param>
+        </member>
+        <member name="M:MottoMap.Models.DataPage`1.#ctor">
+            <summary>
+            Construtor padrão para serialização
+            </summary>
+        </member>
+        <member name="M:MottoMap.Models.DataPage`1.AddNavigationLinks(System.String)">
+            <summary>
+            Adiciona links HATEOAS para navegação entre páginas
+            </summary>
+            <param name="baseUrl">URL base do endpoint</param>
+        </member>
+        <member name="T:MottoMap.Models.PaginationParameters">
+            <summary>
+            Classe para parâmetros de paginação nas requisições
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.PaginationParameters.PageNumber">
+            <summary>
+            Número da página (padrão: 1)
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.PaginationParameters.PageSize">
+            <summary>
+            Quantidade de itens por página (padrão: 10, máximo: 100)
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.PaginationParameters.SortBy">
+            <summary>
+            Campo para ordenação (opcional)
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.PaginationParameters.SortDirection">
+            <summary>
+            Direção da ordenação: asc ou desc (padrão: asc)
+            </summary>
+        </member>
+        <member name="P:MottoMap.Models.PaginationParameters.SearchTerm">
+            <summary>
+            Termo para busca/filtro (opcional)
+            </summary>
+        </member>
+        <member name="M:MottoMap.Models.PaginationParameters.IsValidSortDirection">
+            <summary>
+            Valida se a direção da ordenação é válida
+            </summary>
+            <returns>True se válida, False caso contrário</returns>
+        </member>
+        <member name="T:MottoMap.Services.MotoMaintenanceData">
+            <summary>
+            Dados de entrada para previsão de manutenção
+            </summary>
+        </member>
+        <member name="T:MottoMap.Services.MaintenancePrediction">
+            <summary>
+            Previsão de manutenção
+            </summary>
+        </member>
+        <member name="T:MottoMap.Services.MaintenancePredictionResult">
+            <summary>
+            Resultado da previsão com informações adicionais
+            </summary>
+        </member>
+        <member name="T:MottoMap.Services.MotoMaintenancePredictionService">
+            <summary>
+            Serviço de Machine Learning para previsão de manutenção de motos
+            </summary>
+        </member>
+        <member name="M:MottoMap.Services.MotoMaintenancePredictionService.TrainModel">
+            <summary>
+            Treina o modelo de ML com dados sintéticos
+            </summary>
+        </member>
+        <member name="M:MottoMap.Services.MotoMaintenancePredictionService.PredictMaintenance(System.Int32,System.Int32)">
+            <summary>
+            Faz previsão de manutenção para uma moto
+            </summary>
+        </member>
+        <member name="T:SchemaExampleFilter">
+            <summary>
+            Filtro para adicionar exemplos aos schemas do Swagger
+            </summary>
+        </member>
+    </members>
+</doc>

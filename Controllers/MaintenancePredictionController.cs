@@ -1,0 +1,266 @@
+using Microsoft.AspNetCore.Mvc;
+using MottoMap.Services;
+using MottoMap.Data.Repository;
+using MottoMap.Models;
+
+namespace MottoMap.Controllers
+{
+    /// <summary>
+    /// Controller para previsões de manutenção usando ML.NET
+    /// </summary>
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
+    [Produces("application/json")]
+    [Tags("?? Machine Learning")]
+    public class MaintenancePredictionController : ControllerBase
+    {
+ private readonly MotoMaintenancePredictionService _predictionService;
+        private readonly IMotosRepository _motosRepository;
+
+     public MaintenancePredictionController(
+          MotoMaintenancePredictionService predictionService,
+ IMotosRepository motosRepository)
+        {
+   _predictionService = predictionService;
+_motosRepository = motosRepository;
+    }
+
+        /// <summary>
+        /// Prevê necessidade de manutenção para uma moto específica (por ID)
+        /// </summary>
+        /// <param name="id">ID da moto</param>
+        /// <returns>Previsão de manutenção com recomendações</returns>
+        /// <remarks>
+        /// Utiliza Machine Learning (ML.NET) para analisar:
+        /// - Quilometragem atual
+        /// - Ano de fabricação
+        /// - Idade da moto
+        /// 
+/// E retorna:
+        /// - Necessidade de manutenção (Sim/Não)
+        /// - Probabilidade em porcentagem
+        /// - Prioridade (ALTA, MÉDIA, BAIXA)
+   /// - Recomendações personalizadas
+        /// - Quilometragem da próxima revisão
+  /// </remarks>
+   /// <response code="200">Previsão realizada com sucesso</response>
+     /// <response code="404">Moto não encontrada</response>
+        /// <response code="400">Dados insuficientes para previsão</response>
+        [HttpGet("moto/{id}")]
+   [ProducesResponseType(typeof(MaintenancePredictionResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+ public async Task<ActionResult<MaintenancePredictionResponse>> PredictMaintenanceByMotoId(int id)
+      {
+   var moto = await _motosRepository.GetByIdAsync(id);
+
+ if (moto == null)
+    {
+                return NotFound(new 
+          { 
+      error = "MOTO_NOT_FOUND", 
+    message = $"Moto com ID {id} não foi encontrada" 
+   });
+      }
+
+if (!moto.Quilometragem.HasValue)
+     {
+    return BadRequest(new 
+          { 
+    error = "INSUFFICIENT_DATA", 
+  message = "Moto não possui quilometragem registrada" 
+            });
+      }
+
+      var prediction = _predictionService.PredictMaintenance(
+         moto.Quilometragem.Value, 
+  moto.Ano);
+
+   var response = new MaintenancePredictionResponse
+            {
+    MotoId = moto.IdMoto,
+                Marca = moto.Marca,
+      Modelo = moto.Modelo,
+    Ano = moto.Ano,
+    Placa = moto.Placa,
+                QuilometragemAtual = moto.Quilometragem.Value,
+                NecessitaManutencao = prediction.NecessitaManutencao,
+                ProbabilidadeManutencao = Math.Round(prediction.ProbabilidadeManutencao, 2),
+          Prioridade = prediction.Prioridade,
+           Recomendacao = prediction.Recomendacao,
+ KmProximaRevisao = prediction.KmProximaRevisao,
+DataAnalise = DateTime.UtcNow
+       };
+
+            return Ok(response);
+        }
+
+  /// <summary>
+     /// Prevê necessidade de manutenção com dados customizados
+        /// </summary>
+        /// <param name="request">Dados para previsão</param>
+   /// <returns>Previsão de manutenção</returns>
+        /// <remarks>
+/// Permite fazer previsões sem ter uma moto cadastrada.
+ /// Útil para simulações e análises.
+        /// 
+  /// Exemplo de requisição:
+        /// 
+  ///     POST /api/v1/maintenanceprediction/predict
+        ///     {
+        ///       "quilometragem": 25000,
+        ///       "ano": 2020
+        ///     }
+        /// 
+        /// </remarks>
+        /// <response code="200">Previsão realizada com sucesso</response>
+        /// <response code="400">Dados inválidos</response>
+  [HttpPost("predict")]
+   [ProducesResponseType(typeof(MaintenancePredictionResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+   public ActionResult<MaintenancePredictionResult> PredictMaintenance(
+            [FromBody] MaintenancePredictionRequest request)
+        {
+ if (request.Ano < 1900 || request.Ano > DateTime.Now.Year + 1)
+            {
+        return BadRequest(new 
+        { 
+        error = "INVALID_YEAR", 
+          message = "Ano inválido" 
+       });
+        }
+
+   if (request.Quilometragem < 0 || request.Quilometragem > 500000)
+      {
+       return BadRequest(new 
+         { 
+        error = "INVALID_QUILOMETRAGEM", 
+message = "Quilometragem deve estar entre 0 e 500.000 km" 
+                });
+    }
+
+    var prediction = _predictionService.PredictMaintenance(
+                request.Quilometragem, 
+ request.Ano);
+
+            return Ok(prediction);
+   }
+
+    /// <summary>
+        /// Analisa toda a frota e identifica motos que precisam manutenção
+        /// </summary>
+        /// <returns>Lista de motos que necessitam manutenção</returns>
+   /// <remarks>
+     /// Analisa todas as motos cadastradas e retorna apenas aquelas
+        /// que o modelo ML prevê necessidade de manutenção.
+        /// 
+        /// Útil para:
+        /// - Relatórios gerenciais
+    /// - Planejamento de manutenções
+        /// - Gestão de frota
+        /// </remarks>
+ /// <response code="200">Análise concluída com sucesso</response>
+        [HttpGet("fleet-analysis")]
+        [ProducesResponseType(typeof(FleetAnalysisResponse), StatusCodes.Status200OK)]
+        public async Task<ActionResult<FleetAnalysisResponse>> AnalyzeFleet()
+    {
+     var allMotos = await _motosRepository.GetAllAsync(new PaginationParameters 
+      { 
+  PageSize = 1000 
+   });
+
+            var motosComManutencao = new List<MaintenancePredictionResponse>();
+       var totalAnalisadas = 0;
+
+   foreach (var moto in allMotos.Data)
+     {
+    if (!moto.Quilometragem.HasValue) continue;
+
+         totalAnalisadas++;
+           var prediction = _predictionService.PredictMaintenance(
+         moto.Quilometragem.Value, 
+      moto.Ano);
+
+        if (prediction.NecessitaManutencao)
+     {
+  motosComManutencao.Add(new MaintenancePredictionResponse
+          {
+MotoId = moto.IdMoto,
+     Marca = moto.Marca,
+                  Modelo = moto.Modelo,
+       Ano = moto.Ano,
+    Placa = moto.Placa,
+      QuilometragemAtual = moto.Quilometragem.Value,
+          NecessitaManutencao = prediction.NecessitaManutencao,
+     ProbabilidadeManutencao = Math.Round(prediction.ProbabilidadeManutencao, 2),
+  Prioridade = prediction.Prioridade,
+          Recomendacao = prediction.Recomendacao,
+           KmProximaRevisao = prediction.KmProximaRevisao,
+        DataAnalise = DateTime.UtcNow
+          });
+      }
+            }
+
+      var response = new FleetAnalysisResponse
+      {
+       TotalMotosAnalisadas = totalAnalisadas,
+        MotosNecessitamManutencao = motosComManutencao.Count,
+      PorcentagemNecessitaManutencao = totalAnalisadas > 0 
+    ? Math.Round((double)motosComManutencao.Count / totalAnalisadas * 100, 2) 
+       : 0,
+        Motos = motosComManutencao.OrderByDescending(m => m.ProbabilidadeManutencao).ToList(),
+       DataAnalise = DateTime.UtcNow
+            };
+
+            return Ok(response);
+      }
+    }
+
+ /// <summary>
+    /// Request para previsão customizada
+    /// </summary>
+    public class MaintenancePredictionRequest
+    {
+        /// <summary>
+        /// Quilometragem da moto
+        /// </summary>
+        public int Quilometragem { get; set; }
+
+    /// <summary>
+        /// Ano de fabricação
+        /// </summary>
+        public int Ano { get; set; }
+    }
+
+    /// <summary>
+    /// Response com informações completas da previsão
+    /// </summary>
+ public class MaintenancePredictionResponse
+    {
+        public int MotoId { get; set; }
+        public string Marca { get; set; } = string.Empty;
+        public string Modelo { get; set; } = string.Empty;
+        public int Ano { get; set; }
+   public string Placa { get; set; } = string.Empty;
+        public int QuilometragemAtual { get; set; }
+        public bool NecessitaManutencao { get; set; }
+        public double ProbabilidadeManutencao { get; set; }
+        public string Prioridade { get; set; } = string.Empty;
+public string Recomendacao { get; set; } = string.Empty;
+        public int KmProximaRevisao { get; set; }
+        public DateTime DataAnalise { get; set; }
+    }
+
+    /// <summary>
+    /// Response da análise de frota
+    /// </summary>
+ public class FleetAnalysisResponse
+    {
+  public int TotalMotosAnalisadas { get; set; }
+        public int MotosNecessitamManutencao { get; set; }
+        public double PorcentagemNecessitaManutencao { get; set; }
+        public List<MaintenancePredictionResponse> Motos { get; set; } = new();
+      public DateTime DataAnalise { get; set; }
+    }
+}

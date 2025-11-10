@@ -1,0 +1,126 @@
+﻿using Xunit;
+using Moq;
+using MottoMap.Services;
+
+namespace MottoMap.Tests.Services
+{
+    public class MotoMaintenancePredictionServiceTests
+    {
+        private readonly MotoMaintenancePredictionService _service;
+
+      public MotoMaintenancePredictionServiceTests()
+        {
+    _service = new MotoMaintenancePredictionService();
+    }
+
+        [Fact]
+        public void PredictMaintenance_MotoNova_NaoNecessitaManutencao()
+      {
+            // Arrange
+ int quilometragem = 3000;
+      int ano = 2024;
+
+      // Act
+       var result = _service.PredictMaintenance(quilometragem, ano);
+
+       // Assert
+      Assert.NotNull(result);
+        Assert.False(result.NecessitaManutencao);
+Assert.True(result.ProbabilidadeManutencao < 50);
+        }
+
+  [Fact]
+        public void PredictMaintenance_MotoAltaQuilometragem_NecessitaManutencao()
+        {
+       // Arrange
+            int quilometragem = 25000;
+    int ano = 2020;
+
+      // Act
+            var result = _service.PredictMaintenance(quilometragem, ano);
+
+  // Assert
+            Assert.NotNull(result);
+   Assert.True(result.NecessitaManutencao);
+  Assert.True(result.ProbabilidadeManutencao > 50);
+        }
+
+        [Fact]
+    public void PredictMaintenance_MotoAntiga_NecessitaManutencao()
+        {
+ // Arrange
+      int quilometragem = 20000;
+  int ano = 2018;
+
+        // Act
+        var result = _service.PredictMaintenance(quilometragem, ano);
+
+     // Assert
+      Assert.NotNull(result);
+            Assert.True(result.NecessitaManutencao);
+        }
+
+        [Fact]
+        public void PredictMaintenance_DeveTerRecomendacao()
+   {
+     // Arrange
+        int quilometragem = 15000;
+     int ano = 2022;
+
+            // Act
+       var result = _service.PredictMaintenance(quilometragem, ano);
+
+        // Assert
+            Assert.NotNull(result);
+      Assert.NotNull(result.Recomendacao);
+        Assert.NotEmpty(result.Recomendacao);
+  }
+
+        [Fact]
+        public void PredictMaintenance_DeveTerPrioridade()
+        {
+    // Arrange
+ int quilometragem = 30000;
+         int ano = 2019;
+
+            // Act
+         var result = _service.PredictMaintenance(quilometragem, ano);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Prioridade);
+    Assert.Contains(result.Prioridade, new[] { "ALTA", "MÉDIA", "BAIXA" });
+        }
+
+        [Fact]
+ public void PredictMaintenance_DeveCalcularProximaRevisao()
+        {
+        // Arrange
+            int quilometragem = 7000;
+         int ano = 2023;
+
+            // Act
+            var result = _service.PredictMaintenance(quilometragem, ano);
+
+     // Assert
+        Assert.NotNull(result);
+Assert.True(result.KmProximaRevisao > quilometragem);
+  Assert.Equal(10000, result.KmProximaRevisao); // Próxima revisão aos 10.000 km
+    }
+
+        [Theory]
+        [InlineData(1000, 2024, false)]
+        [InlineData(5000, 2023, false)]
+   [InlineData(20000, 2020, true)]
+        [InlineData(30000, 2018, true)]
+        public void PredictMaintenance_DiferentesCenarios(int km, int ano, bool esperaNecessita)
+        {
+       // Act
+   var result = _service.PredictMaintenance(km, ano);
+
+       // Assert
+            Assert.NotNull(result);
+            Assert.Equal(esperaNecessita, result.NecessitaManutencao);
+        }
+}
+}

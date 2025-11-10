@@ -1,0 +1,156 @@
+﻿using Xunit;
+using MottoMap.Mappers;
+using MottoMap.Models;
+using MottoMap.DTOs.Motos;
+
+namespace MottoMap.Tests.Mappers
+{
+    public class MotoMapperTests
+    {
+        [Fact]
+        public void FormatPlaca_PlacaAntiga_DeveFormatar()
+   {
+   // Arrange
+ string placa = "abc1234";
+
+   // Act
+    var result = MotoMapper.FormatPlaca(placa);
+
+ // Assert
+   Assert.Equal("ABC-1234", result);
+        }
+
+[Fact]
+        public void FormatPlaca_PlacaMercosul_DeveFormatar()
+   {
+            // Arrange
+string placa = "abc1d23";
+
+            // Act
+      var result = MotoMapper.FormatPlaca(placa);
+
+ // Assert
+            Assert.Equal("ABC1D23", result);
+   }
+
+    [Fact]
+   public void FormatPlaca_PlacaJaFormatada_NaoDeveAlterar()
+   {
+   // Arrange
+      string placa = "ABC-1234";
+
+            // Act
+            var result = MotoMapper.FormatPlaca(placa);
+
+ // Assert
+   Assert.Equal("ABC-1234", result);
+        }
+
+ [Fact]
+  public void ToEntity_CreateDto_DeveCriarEntity()
+        {
+   // Arrange
+        var dto = new CreateMotoDto
+   {
+       Marca = "Honda",
+          Modelo = "CG 160",
+        Ano = 2023,
+       Placa = "ABC-1234",
+  IdFilial = 1,
+         Cor = "Vermelha",
+        Quilometragem = 5000
+    };
+
+   // Act
+ var entity = MotoMapper.ToEntity(dto);
+
+         // Assert
+      Assert.NotNull(entity);
+  Assert.Equal(dto.Marca, entity.Marca);
+  Assert.Equal(dto.Modelo, entity.Modelo);
+  Assert.Equal(dto.Ano, entity.Ano);
+   Assert.Equal(dto.IdFilial, entity.IdFilial);
+            Assert.Equal(dto.Cor, entity.Cor);
+    Assert.Equal(dto.Quilometragem, entity.Quilometragem);
+ }
+
+        [Fact]
+    public void ToResponseDto_Entity_DeveCriarDto()
+      {
+      // Arrange
+  var entity = new MotosEntity
+      {
+          IdMoto = 1,
+        Marca = "Honda",
+       Modelo = "CG 160",
+     Ano = 2023,
+     Placa = "ABC-1234",
+    IdFilial = 1,
+       Cor = "Vermelha",
+  Quilometragem = 5000,
+       Filial = new FilialEntity 
+      { 
+        IdFilial = 1, 
+Nome = "Filial SP",
+     Endereco = "Rua A",
+       Cidade = "São Paulo",
+Estado = "SP",
+      Cep = "01000-000"
+       }
+       };
+
+      // Act
+          var dto = MotoMapper.ToResponseDto(entity);
+
+   // Assert
+        Assert.NotNull(dto);
+    Assert.Equal(entity.IdMoto, dto.IdMoto);
+     Assert.Equal(entity.Marca, dto.Marca);
+  Assert.Equal(entity.Modelo, dto.Modelo);
+          Assert.Equal(entity.Ano, dto.Ano);
+   Assert.Equal(entity.Placa, dto.Placa);
+            Assert.Equal(entity.Cor, dto.Cor);
+  Assert.Equal(entity.Quilometragem, dto.Quilometragem);
+         Assert.NotNull(dto.Filial);
+        }
+
+   [Fact]
+        public void UpdateEntity_DeveAtualizarEntity()
+  {
+    // Arrange
+        var entity = new MotosEntity
+       {
+          IdMoto = 1,
+         Marca = "Honda",
+         Modelo = "CG 160",
+        Ano = 2023,
+     Placa = "ABC-1234",
+ IdFilial = 1,
+         Cor = "Vermelha",
+   Quilometragem = 5000
+        };
+
+   var updateDto = new UpdateMotoDto
+            {
+        Marca = "Yamaha",
+Modelo = "Factor 150",
+     Ano = 2024,
+ Placa = "XYZ-9876",
+         IdFilial = 2,
+           Cor = "Azul",
+      Quilometragem = 1000
+   };
+
+        // Act
+      MotoMapper.UpdateEntity(entity, updateDto);
+
+    // Assert
+  Assert.Equal(updateDto.Marca, entity.Marca);
+    Assert.Equal(updateDto.Modelo, entity.Modelo);
+    Assert.Equal(updateDto.Ano, entity.Ano);
+     Assert.Equal(updateDto.IdFilial, entity.IdFilial);
+            Assert.Equal(updateDto.Cor, entity.Cor);
+Assert.Equal(updateDto.Quilometragem, entity.Quilometragem);
+        }
+    }
+}

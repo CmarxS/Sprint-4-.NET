@@ -1,0 +1,162 @@
+/* Custom CSS for MottoMap API Swagger Documentation */
+
+/* Header customization */
+.swagger-ui .topbar {
+    background-color: #1976d2;
+    border-bottom: 3px solid #0d47a1;
+}
+
+.swagger-ui .topbar .download-url-wrapper .select-label {
+    color: white;
+}
+
+.swagger-ui .topbar .download-url-wrapper input[type=text] {
+    border: 2px solid #0d47a1;
+}
+
+/* Info section styling */
+.swagger-ui .info {
+    margin: 20px 0;
+}
+
+.swagger-ui .info .title {
+    color: #1976d2;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.swagger-ui .info .description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Method colors */
+.swagger-ui .opblock.opblock-get {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.swagger-ui .opblock.opblock-post {
+    border-color: #2196f3;
+    background: rgba(33, 150, 243, 0.1);
+}
+
+.swagger-ui .opblock.opblock-put {
+    border-color: #ff9800;
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.swagger-ui .opblock.opblock-delete {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.1);
+}
+
+/* Response examples styling */
+.swagger-ui .response-col_status {
+    font-weight: bold;
+}
+
+.swagger-ui .response-col_description {
+    font-style: italic;
+}
+
+/* Schema styling */
+.swagger-ui .model-box {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.swagger-ui .model .property {
+    font-weight: 500;
+}
+
+/* Try it out button */
+.swagger-ui .btn.try-out__btn {
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: 500;
+}
+
+.swagger-ui .btn.try-out__btn:hover {
+    background-color: #0d47a1;
+}
+
+/* Execute button */
+.swagger-ui .btn.execute {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.swagger-ui .btn.execute:hover {
+    background-color: #388e3c;
+}
+
+/* Parameters table */
+.swagger-ui .parameters thead tr {
+    background-color: #f5f5f5;
+}
+
+.swagger-ui .parameters .parameter__name {
+    font-weight: 600;
+    color: #1976d2;
+}
+
+/* Responses section */
+.swagger-ui .responses-inner h4 {
+    color: #424242;
+    font-weight: 600;
+}
+
+/* Authorization section */
+.swagger-ui .auth-wrapper {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 16px;
+}
+
+/* Custom branding */
+.swagger-ui .info .title::after {
+    content: " ???";
+    font-size: 0.8em;
+}
+
+/* Highlight important notes */
+.swagger-ui .info .description code {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+/* Improve readability */
+.swagger-ui .info .description h2 {
+    color: #1976d2;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 8px;
+}
+
+.swagger-ui .info .description h3 {
+    color: #424242;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+
+/* Status indicators */
+.swagger-ui .info .description li {
+    margin-bottom: 5px;
+}
+
+.swagger-ui .info .description li::marker {
+    color: #4caf50;
+}

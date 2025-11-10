@@ -1,0 +1,49 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MottoMap.Models
+{
+    [Table("NET_C3_Motos")]
+    public class MotosEntity
+    {
+        [Key]
+        [Column("IdMoto")]
+        public int IdMoto { get; set; }
+        
+        [Required(ErrorMessage = "Marca é obrigatória")]
+        [Column("Marca")]
+        [MaxLength(50, ErrorMessage = "Marca deve ter no máximo 50 caracteres")]
+        public string Marca { get; set; }
+        
+        [Required(ErrorMessage = "Modelo é obrigatório")]
+        [Column("Modelo")]
+        [MaxLength(80, ErrorMessage = "Modelo deve ter no máximo 80 caracteres")]
+        public string Modelo { get; set; }
+        
+        [Required(ErrorMessage = "Ano é obrigatório")]
+        [Column("Ano")]
+        [Range(1900, 2030, ErrorMessage = "Ano deve estar entre 1900 e 2030")]
+        public int Ano { get; set; }
+        
+        [Required(ErrorMessage = "Placa é obrigatória")]
+        [Column("Placa")]
+        [MaxLength(10, ErrorMessage = "Placa deve ter no máximo 10 caracteres")]
+        public string Placa { get; set; }
+        
+        [Required(ErrorMessage = "ID da Filial é obrigatório")]
+        [Column("IdFilial")]
+        public int IdFilial { get; set; }
+        
+        [Column("Cor")]
+        [MaxLength(30, ErrorMessage = "Cor deve ter no máximo 30 caracteres")]
+        public string? Cor { get; set; }
+        
+        [Column("Quilometragem")]
+        [Range(0, int.MaxValue, ErrorMessage = "Quilometragem deve ser maior ou igual a zero")]
+        public int? Quilometragem { get; set; }
+        
+        // Propriedade de navegação para FilialEntity
+        [ForeignKey("IdFilial")]
+        public virtual FilialEntity? Filial { get; set; }
+    }
+}

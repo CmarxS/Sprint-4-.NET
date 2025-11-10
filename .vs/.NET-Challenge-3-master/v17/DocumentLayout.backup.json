@@ -1,0 +1,284 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MottoMap.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\MottoMap.Tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MottoMap.Tests\\MottoMap.Tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Middleware\\ApiKeyMiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Middleware\\ApiKeyMiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\HealthController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Controllers\\HealthController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Services\\MotoMaintenancePredictionService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Services\\MotoMaintenancePredictionService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\MaintenancePredictionController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Controllers\\MaintenancePredictionController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\MotosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Controllers\\MotosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\FiliaisController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Controllers\\FiliaisController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\FuncionariosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Controllers\\FuncionariosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Services\\MotoMaintenancePredictionServiceTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MottoMap.Tests\\Services\\MotoMaintenancePredictionServiceTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Mappers\\MotoMapperTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MottoMap.Tests\\Mappers\\MotoMapperTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Integration\\HealthCheckIntegrationTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MottoMap.Tests\\Integration\\HealthCheckIntegrationTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\caio0\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\373091769\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MottoMap.csproj",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.csproj",
+              "RelativeDocumentMoniker": "MottoMap.csproj",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.csproj",
+              "RelativeToolTip": "MottoMap.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-11-01T17:07:03.141Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:27:12.302Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MaintenancePredictionController.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\MaintenancePredictionController.cs",
+              "RelativeDocumentMoniker": "Controllers\\MaintenancePredictionController.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\MaintenancePredictionController.cs",
+              "RelativeToolTip": "Controllers\\MaintenancePredictionController.cs",
+              "ViewState": "AgIAAAgBAAAAAAAAAIBJwAoBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:26:43.055Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MotoMaintenancePredictionService.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Services\\MotoMaintenancePredictionService.cs",
+              "RelativeDocumentMoniker": "Services\\MotoMaintenancePredictionService.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Services\\MotoMaintenancePredictionService.cs",
+              "RelativeToolTip": "Services\\MotoMaintenancePredictionService.cs",
+              "ViewState": "AgIAAMUAAAAAAAAAAEBVwMkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:26:09.505Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ApiKeyMiddleware.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Middleware\\ApiKeyMiddleware.cs",
+              "RelativeDocumentMoniker": "Middleware\\ApiKeyMiddleware.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Middleware\\ApiKeyMiddleware.cs",
+              "RelativeToolTip": "Middleware\\ApiKeyMiddleware.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABkAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:25:24.192Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "HealthController.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\HealthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HealthController.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\HealthController.cs",
+              "RelativeToolTip": "Controllers\\HealthController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:25:36.661Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MottoMap.Tests.csproj",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\MottoMap.Tests.csproj",
+              "RelativeDocumentMoniker": "MottoMap.Tests\\MottoMap.Tests.csproj",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\MottoMap.Tests.csproj",
+              "RelativeToolTip": "MottoMap.Tests\\MottoMap.Tests.csproj",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-11-01T16:47:54.246Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAgAAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-01T16:27:34.817Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-01T16:42:43.348Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\caio0\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\373091769\\README.md",
+              "RelativeDocumentMoniker": "..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\373091769\\README.md",
+              "ToolTip": "C:\\Users\\caio0\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\373091769\\README.md",
+              "RelativeToolTip": "..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\373091769\\README.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-01T16:42:50.972Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "HealthCheckIntegrationTests.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Integration\\HealthCheckIntegrationTests.cs",
+              "RelativeDocumentMoniker": "MottoMap.Tests\\Integration\\HealthCheckIntegrationTests.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Integration\\HealthCheckIntegrationTests.cs",
+              "RelativeToolTip": "MottoMap.Tests\\Integration\\HealthCheckIntegrationTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:30:30.709Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "MotoMapperTests.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Mappers\\MotoMapperTests.cs",
+              "RelativeDocumentMoniker": "MottoMap.Tests\\Mappers\\MotoMapperTests.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Mappers\\MotoMapperTests.cs",
+              "RelativeToolTip": "MottoMap.Tests\\Mappers\\MotoMapperTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:30:19.036Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "MotoMaintenancePredictionServiceTests.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Services\\MotoMaintenancePredictionServiceTests.cs",
+              "RelativeDocumentMoniker": "MottoMap.Tests\\Services\\MotoMaintenancePredictionServiceTests.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\MottoMap.Tests\\Services\\MotoMaintenancePredictionServiceTests.cs",
+              "RelativeToolTip": "MottoMap.Tests\\Services\\MotoMaintenancePredictionServiceTests.cs",
+              "ViewState": "AgIAAHoAAAAAAAAAAABBwH4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:29:58.302Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "FuncionariosController.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\FuncionariosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\FuncionariosController.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\FuncionariosController.cs",
+              "RelativeToolTip": "Controllers\\FuncionariosController.cs",
+              "ViewState": "AgIAACABAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:28:37.064Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "FiliaisController.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\FiliaisController.cs",
+              "RelativeDocumentMoniker": "Controllers\\FiliaisController.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\FiliaisController.cs",
+              "RelativeToolTip": "Controllers\\FiliaisController.cs",
+              "ViewState": "AgIAADkBAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:28:09.418Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MotosController.cs",
+              "DocumentMoniker": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\MotosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\MotosController.cs",
+              "ToolTip": "C:\\Users\\caio0\\Desktop\\.NET-Challenge-3-master\\Controllers\\MotosController.cs",
+              "RelativeToolTip": "Controllers\\MotosController.cs",
+              "ViewState": "AgIAAJsBAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:27:46.758Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

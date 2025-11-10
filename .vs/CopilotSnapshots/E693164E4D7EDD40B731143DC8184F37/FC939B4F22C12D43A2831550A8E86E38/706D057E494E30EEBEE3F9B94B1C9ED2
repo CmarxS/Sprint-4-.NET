@@ -1,0 +1,183 @@
+﻿using MottoMap.Data.AppData;
+using MottoMap.Models;
+
+namespace MottoMap.Data.Samples
+{
+    /// <summary>
+    /// Classe responsável por popular o banco de dados com dados de exemplo
+    /// </summary>
+    public static class SeedData
+    {
+        /// <summary>
+        /// Método para popular o banco com dados de exemplo
+        /// </summary>
+        /// <param name="context">Contexto do banco de dados</param>
+        public static void PopulateDatabase(ApplicationContext context)
+        {
+            // Verifica se já existem dados no banco
+            if (context.Filiais.Any() || context.Funcionarios.Any() || context.Motos.Any())
+            {
+                return; // Banco já foi populado
+            }
+
+            // Criar Filiais de exemplo
+            var filiais = new List<FilialEntity>
+            {
+                new FilialEntity
+                {
+                    Nome = "Filial São Paulo - Centro",
+                    Endereco = "Rua Augusta, 1000",
+                    Cidade = "São Paulo",
+                    Estado = "SP",
+                    CEP = "01310-100"
+                },
+                new FilialEntity
+                {
+                    Nome = "Filial Rio de Janeiro - Copacabana",
+                    Endereco = "Av. Atlântica, 2000",
+                    Cidade = "Rio de Janeiro",
+                    Estado = "RJ",
+                    CEP = "22021-001"
+                },
+                new FilialEntity
+                {
+                    Nome = "Filial Belo Horizonte - Savassi",
+                    Endereco = "Rua Pernambuco, 500",
+                    Cidade = "Belo Horizonte",
+                    Estado = "MG",
+                    CEP = "30130-151"
+                }
+            };
+
+            context.Filiais.AddRange(filiais);
+            context.SaveChanges();
+
+            // Criar Funcionários de exemplo
+            var funcionarios = new List<FuncionarioEntity>
+            {
+                new FuncionarioEntity
+                {
+                    Nome = "João Silva",
+                    Email = "joao.silva@mottomap.com",
+                    IdFilial = filiais[0].IdFilial,
+                    Funcao = "Gerente Operacional"
+                },
+                new FuncionarioEntity
+                {
+                    Nome = "Maria Santos",
+                    Email = "maria.santos@mottomap.com",
+                    IdFilial = filiais[0].IdFilial,
+                    Funcao = "Analista de Frota"
+                },
+                new FuncionarioEntity
+                {
+                    Nome = "Pedro Costa",
+                    Email = "pedro.costa@mottomap.com",
+                    IdFilial = filiais[1].IdFilial,
+                    Funcao = "Coordenador Regional"
+                },
+                new FuncionarioEntity
+                {
+                    Nome = "Ana Oliveira",
+                    Email = "ana.oliveira@mottomap.com",
+                    IdFilial = filiais[1].IdFilial,
+                    Funcao = "Técnica de Manutenção"
+                },
+                new FuncionarioEntity
+                {
+                    Nome = "Carlos Ferreira",
+                    Email = "carlos.ferreira@mottomap.com",
+                    IdFilial = filiais[2].IdFilial,
+                    Funcao = "Supervisor de Operações"
+                }
+            };
+
+            context.Funcionarios.AddRange(funcionarios);
+            context.SaveChanges();
+
+            // Criar Motos de exemplo
+            var motos = new List<MotosEntity>
+            {
+                new MotosEntity
+                {
+                    Marca = "Honda",
+                    Modelo = "CG 160 Titan",
+                    Ano = 2023,
+                    Placa = "ABC-1234",
+                    IdFilial = filiais[0].IdFilial,
+                    Cor = "Vermelha",
+                    Quilometragem = 5000
+                },
+                new MotosEntity
+                {
+                    Marca = "Yamaha",
+                    Modelo = "Factor 125",
+                    Ano = 2022,
+                    Placa = "XYZ-5678",
+                    IdFilial = filiais[0].IdFilial,
+                    Cor = "Azul",
+                    Quilometragem = 8500
+                },
+                new MotosEntity
+                {
+                    Marca = "Honda",
+                    Modelo = "CB 600F Hornet",
+                    Ano = 2023,
+                    Placa = "DEF-9012",
+                    IdFilial = filiais[1].IdFilial,
+                    Cor = "Preta",
+                    Quilometragem = 2000
+                },
+                new MotosEntity
+                {
+                    Marca = "Kawasaki",
+                    Modelo = "Ninja 400",
+                    Ano = 2024,
+                    Placa = "GHI-3456",
+                    IdFilial = filiais[1].IdFilial,
+                    Cor = "Verde",
+                    Quilometragem = 1200
+                },
+                new MotosEntity
+                {
+                    Marca = "Suzuki",
+                    Modelo = "GSX-R 750",
+                    Ano = 2023,
+                    Placa = "JKL-7890",
+                    IdFilial = filiais[2].IdFilial,
+                    Cor = "Branca",
+                    Quilometragem = 3500
+                },
+                new MotosEntity
+                {
+                    Marca = "BMW",
+                    Modelo = "F 850 GS",
+                    Ano = 2024,
+                    Placa = "MNO-2468",
+                    IdFilial = filiais[2].IdFilial,
+                    Cor = "Cinza",
+                    Quilometragem = 800
+                }
+            };
+
+            context.Motos.AddRange(motos);
+            context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Método para popular o banco de dados usando uma instância do contexto
+        /// </summary>
+        /// <param name="serviceProvider">Provider de serviços</param>
+        public static void Initialize(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+            
+            // Garantir que o banco de dados foi criado
+            context.Database.EnsureCreated();
+            
+            // Popular com dados de exemplo
+            PopulateDatabase(context);
+        }
+    }
+}

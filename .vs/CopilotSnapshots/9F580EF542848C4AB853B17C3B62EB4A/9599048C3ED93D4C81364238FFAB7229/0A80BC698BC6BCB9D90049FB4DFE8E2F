@@ -1,0 +1,226 @@
+﻿using Microsoft.EntityFrameworkCore;
+using MottoMap.Data.AppData;
+using MottoMap.Data.Repository;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using MottoMap.Middleware;
+using MottoMap.Services;
+using Microsoft.AspNetCore.Mvc;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllers();
+
+// Configuração do Entity Framework com Oracle
+builder.Services.AddDbContext<ApplicationContext>(options =>
+    options.UseOracle(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Registro dos Repositories
+builder.Services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
+builder.Services.AddScoped<IFilialRepository, FilialRepository>();
+builder.Services.AddScoped<IMotosRepository, MotosRepository>();
+
+// Registro do serviço de ML.NET
+builder.Services.AddSingleton<MotoMaintenancePredictionService>();
+
+// Configuração de Versionamento da API
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+
+// Configuração de Health Checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationContext>(
+        name: "database",
+        tags: new[] { "db", "oracle" });
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+  {
+        Title = "MottoMap API",
+        Version = "v1.0",
+        Description = @"
+# Sistema de Gestão de Frota de Motos
+
+## Visão Geral
+API REST completa para gerenciamento de frotas de motocicletas com:
+- **3 Entidades principais**: Filiais, Funcionários e Motos
+- **CRUD completo** com boas práticas REST
+- **Machine Learning**: Previsão de manutenção com ML.NET
+- **Segurança**: API Key Authentication
+- **Health Checks**: Monitoramento de saúde da aplicação
+- **Versionamento**: API versionada (v1.0)
+- **Paginação avançada** com filtros e ordenação
+- **HATEOAS** implementado para navegabilidade
+- **Validações robustas** e tratamento de erros
+
+## 🔐 Autenticação
+Para acessar os endpoints (exceto /health e /swagger), adicione o header:
+```
+X-API-Key: MottoMap2024SecureKey
+```
+
+## Funcionalidades Principais
+- ✅ **Gestão de Filiais**: Controle de unidades por cidade/estado
+- ✅ **Gestão de Funcionários**: Cadastro com validação de email único
+- ✅ **Gestão de Motos**: Controle de frota com placas antigas e Mercosul
+- ✅ **ML - Previsão de Manutenção**: Análise inteligente com Machine Learning
+- ✅ **Health Checks**: Monitoramento da API e banco de dados
+- ✅ **Relacionamentos**: Filiais → Funcionários e Motos
+- ✅ **Filtros Avançados**: Busca por múltiplos critérios
+
+## Tecnologias
+- **Framework**: .NET 8.0
+- **Database**: Oracle Database
+- **ORM**: Entity Framework Core
+- **ML**: ML.NET para previsão de manutenção
+- **Documentação**: Swagger/OpenAPI
+- **Segurança**: API Key Authentication
+",
+    });
+
+    // Configurar segurança no Swagger
+    c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    {
+    Description = "API Key necessária para acessar os endpoints. Adicione: X-API-Key: MottoMap2024SecureKey",
+        Name = "X-API-Key",
+    In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+    Scheme = "ApiKeyScheme"
+  });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+             Reference = new OpenApiReference
+    {
+          Type = ReferenceType.SecurityScheme,
+    Id = "ApiKey"
+     }
+        },
+     Array.Empty<string>()
+        }
+    });
+
+    // Incluir comentários XML na documentação
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+ }
+
+    // Configurar exemplos para melhor documentação
+    c.SchemaFilter<SchemaExampleFilter>();
+    
+    // Agrupar endpoints por tags
+    c.TagActionsBy(api => new[] { api.GroupName ?? api.ActionDescriptor.RouteValues["controller"] });
+    c.DocInclusionPredicate((name, api) => true);
+
+ // Configurar ordenação das operações
+    c.OrderActionsBy((apiDesc) => $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{apiDesc.HttpMethod}");
+});
+
+// Habilitar geração de comentários XML
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = false;
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+// HABILITADO PARA TODOS OS AMBIENTES (APENAS PARA TESTES)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MottoMap API V1.0");
+    c.RoutePrefix = string.Empty; // Swagger na raiz
+    c.DocumentTitle = "MottoMap API - Documentação";
+    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
+    c.DefaultModelsExpandDepth(2);
+    c.DisplayRequestDuration();
+    c.EnableTryItOutByDefault();
+    c.ShowExtensions();
+    
+    // Configurar tema
+    c.InjectStylesheet("/swagger-ui/custom.css");
+});
+
+// Adicionar CSS customizado para o Swagger
+app.UseStaticFiles();
+
+app.UseHttpsRedirection();
+
+// Middleware de API Key (deve vir antes de UseAuthorization)
+app.UseMiddleware<ApiKeyMiddleware>();
+
+app.UseAuthorization();
+
+// Configurar Health Checks
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+app.MapControllers();
+
+app.Run();
+
+// Tornar Program acessível para testes de integração
+public partial class Program { }
+
+/// <summary>
+/// Filtro para adicionar exemplos aos schemas do Swagger
+/// </summary>
+public class SchemaExampleFilter : Swashbuckle.AspNetCore.SwaggerGen.ISchemaFilter
+{
+    public void Apply(Microsoft.OpenApi.Models.OpenApiSchema schema, Swashbuckle.AspNetCore.SwaggerGen.SchemaFilterContext context)
+    {
+        if (context.Type == typeof(MottoMap.DTOs.Funcionario.CreateFuncionarioDto))
+        {
+            schema.Example = new Microsoft.OpenApi.Any.OpenApiObject
+            {
+                ["nome"] = new Microsoft.OpenApi.Any.OpenApiString("João Silva Santos"),
+                ["email"] = new Microsoft.OpenApi.Any.OpenApiString("joao.silva@mottomap.com"),
+                ["idFilial"] = new Microsoft.OpenApi.Any.OpenApiInteger(1),
+                ["funcao"] = new Microsoft.OpenApi.Any.OpenApiString("Gerente Operacional")
+            };
+        }
+        else if (context.Type == typeof(MottoMap.DTOs.Filial.CreateFilialDto))
+        {
+            schema.Example = new Microsoft.OpenApi.Any.OpenApiObject
+            {
+                ["nome"] = new Microsoft.OpenApi.Any.OpenApiString("Filial São Paulo - Centro"),
+                ["endereco"] = new Microsoft.OpenApi.Any.OpenApiString("Rua Augusta, 1000"),
+                ["cidade"] = new Microsoft.OpenApi.Any.OpenApiString("São Paulo"),
+                ["estado"] = new Microsoft.OpenApi.Any.OpenApiString("SP"),
+                ["cep"] = new Microsoft.OpenApi.Any.OpenApiString("01310-100")
+            };
+        }
+        else if (context.Type == typeof(MottoMap.DTOs.Motos.CreateMotoDto))
+        {
+            schema.Example = new Microsoft.OpenApi.Any.OpenApiObject
+            {
+                ["marca"] = new Microsoft.OpenApi.Any.OpenApiString("Honda"),
+                ["modelo"] = new Microsoft.OpenApi.Any.OpenApiString("CG 160 Titan"),
+                ["ano"] = new Microsoft.OpenApi.Any.OpenApiInteger(2023),
+                ["placa"] = new Microsoft.OpenApi.Any.OpenApiString("ABC-1234"),
+                ["idFilial"] = new Microsoft.OpenApi.Any.OpenApiInteger(1),
+                ["cor"] = new Microsoft.OpenApi.Any.OpenApiString("Vermelha"),
+                ["quilometragem"] = new Microsoft.OpenApi.Any.OpenApiInteger(5000)
+            };
+        }
+    }
+}

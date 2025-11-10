@@ -1,0 +1,161 @@
+﻿using Microsoft.EntityFrameworkCore;
+using MottoMap.Data.AppData;
+using MottoMap.Models;
+
+namespace MottoMap.Data.Repository
+{
+    /// <summary>
+    /// Implementação do repositório de Funcionários
+    /// </summary>
+    public class FuncionarioRepository : BaseRepository<FuncionarioEntity>, IFuncionarioRepository
+    {
+        public FuncionarioRepository(ApplicationContext context) : base(context)
+        {
+        }
+
+        public override async Task<FuncionarioEntity?> GetByIdAsync(int id)
+        {
+            return await _dbSet
+                .Include(f => f.Filial)
+                .FirstOrDefaultAsync(f => f.IdFuncionario == id);
+        }
+
+        public override async Task<DataPage<FuncionarioEntity>> GetAllAsync(PaginationParameters paginationParameters)
+        {
+            var query = _dbSet.Include(f => f.Filial).AsQueryable();
+
+            // Aplicar filtro de busca se fornecido
+            if (!string.IsNullOrEmpty(paginationParameters.SearchTerm))
+            {
+                query = ApplySearch(query, paginationParameters.SearchTerm);
+            }
+
+            // Aplicar ordenação se fornecida
+            if (!string.IsNullOrEmpty(paginationParameters.SortBy))
+            {
+                query = ApplySort(query, paginationParameters.SortBy, paginationParameters.SortDirection);
+            }
+
+            // Contar total de itens
+            var totalItems = await query.CountAsync();
+
+            // Aplicar paginação
+            var items = await query
+                .Skip((paginationParameters.PageNumber - 1) * paginationParameters.PageSize)
+                .Take(paginationParameters.PageSize)
+                .ToListAsync();
+
+            return new DataPage<FuncionarioEntity>(items, paginationParameters.PageNumber, paginationParameters.PageSize, totalItems);
+        }
+
+        public async Task<DataPage<FuncionarioEntity>> GetByFilialAsync(int idFilial, PaginationParameters paginationParameters)
+        {
+            var query = _dbSet
+                .Include(f => f.Filial)
+                .Where(f => f.IdFilial == idFilial);
+
+            // Aplicar filtro de busca se fornecido
+            if (!string.IsNullOrEmpty(paginationParameters.SearchTerm))
+            {
+                query = ApplySearch(query, paginationParameters.SearchTerm);
+            }
+
+            // Aplicar ordenação se fornecida
+            if (!string.IsNullOrEmpty(paginationParameters.SortBy))
+            {
+                query = ApplySort(query, paginationParameters.SortBy, paginationParameters.SortDirection);
+            }
+
+            // Contar total de itens
+            var totalItems = await query.CountAsync();
+
+            // Aplicar paginação
+            var items = await query
+                .Skip((paginationParameters.PageNumber - 1) * paginationParameters.PageSize)
+                .Take(paginationParameters.PageSize)
+                .ToListAsync();
+
+            return new DataPage<FuncionarioEntity>(items, paginationParameters.PageNumber, paginationParameters.PageSize, totalItems);
+        }
+
+        public async Task<FuncionarioEntity?> GetByEmailAsync(string email)
+        {
+            return await _dbSet
+                .Include(f => f.Filial)
+                .FirstOrDefaultAsync(f => f.Email == email);
+        }
+
+        public async Task<DataPage<FuncionarioEntity>> GetByFuncaoAsync(string funcao, PaginationParameters paginationParameters)
+        {
+            var query = _dbSet
+                .Include(f => f.Filial)
+                .Where(f => f.Funcao.Contains(funcao));
+
+            // Aplicar filtro de busca se fornecido
+            if (!string.IsNullOrEmpty(paginationParameters.SearchTerm))
+            {
+                query = ApplySearch(query, paginationParameters.SearchTerm);
+            }
+
+            // Aplicar ordenação se fornecida
+            if (!string.IsNullOrEmpty(paginationParameters.SortBy))
+            {
+                query = ApplySort(query, paginationParameters.SortBy, paginationParameters.SortDirection);
+            }
+
+            // Contar total de itens
+            var totalItems = await query.CountAsync();
+
+            // Aplicar paginação
+            var items = await query
+                .Skip((paginationParameters.PageNumber - 1) * paginationParameters.PageSize)
+                .Take(paginationParameters.PageSize)
+                .ToListAsync();
+
+            return new DataPage<FuncionarioEntity>(items, paginationParameters.PageNumber, paginationParameters.PageSize, totalItems);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email, int? idFuncionarioAtual = null)
+        {
+            if (idFuncionarioAtual.HasValue)
+            {
+                // Para atualizações - verificar se existe outro funcionário com o mesmo email
+                var count = await _dbSet
+                    .Where(f => f.Email == email && f.IdFuncionario != idFuncionarioAtual.Value)
+                    .CountAsync();
+                return count > 0;
+            }
+            else
+            {
+                // Para criações - verificar se existe qualquer funcionário com o email
+                var count = await _dbSet
+                    .Where(f => f.Email == email)
+                    .CountAsync();
+                return count > 0;
+            }
+        }
+
+        protected override IQueryable<FuncionarioEntity> ApplySearch(IQueryable<FuncionarioEntity> query, string searchTerm)
+        {
+            return query.Where(f => 
+                f.Nome.Contains(searchTerm) || 
+                f.Email.Contains(searchTerm) || 
+                f.Funcao.Contains(searchTerm) ||
+                (f.Filial != null && f.Filial.Nome.Contains(searchTerm)));
+        }
+
+        protected override IQueryable<FuncionarioEntity> ApplySort(IQueryable<FuncionarioEntity> query, string sortBy, string sortDirection)
+        {
+            var isDescending = sortDirection.ToLower() == "desc";
+
+            return sortBy.ToLower() switch
+            {
+                "nome" => isDescending ? query.OrderByDescending(f => f.Nome) : query.OrderBy(f => f.Nome),
+                "email" => isDescending ? query.OrderByDescending(f => f.Email) : query.OrderBy(f => f.Email),
+                "funcao" => isDescending ? query.OrderByDescending(f => f.Funcao) : query.OrderBy(f => f.Funcao),
+                "filial" => isDescending ? query.OrderByDescending(f => f.Filial!.Nome) : query.OrderBy(f => f.Filial!.Nome),
+                _ => query.OrderBy(f => f.IdFuncionario)
+            };
+        }
+    }
+}

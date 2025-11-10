@@ -1,0 +1,232 @@
+﻿using MottoMap.Models;
+using MottoMap.DTOs.Filial;
+using MottoMap.DTOs.Common;
+
+namespace MottoMap.Mappers
+{
+    /// <summary>
+    /// Mapper para conversões entre FilialEntity e DTOs
+    /// </summary>
+    public static class FilialMapper
+    {
+        /// <summary>
+        /// Converte CreateFilialDto para FilialEntity
+        /// </summary>
+        /// <param name="dto">DTO de criação</param>
+        /// <returns>Entidade da filial</returns>
+        public static FilialEntity ToEntity(CreateFilialDto dto)
+        {
+            return new FilialEntity
+            {
+                Nome = dto.Nome,
+                Endereco = dto.Endereco,
+                Cidade = dto.Cidade,
+                Estado = dto.Estado.ToUpper(), // Garantir que está em maiúsculo
+                CEP = dto.CEP
+            };
+        }
+
+        /// <summary>
+        /// Atualiza uma FilialEntity existente com dados do UpdateFilialDto
+        /// </summary>
+        /// <param name="entity">Entidade existente</param>
+        /// <param name="dto">DTO de atualização</param>
+        public static void UpdateEntity(FilialEntity entity, UpdateFilialDto dto)
+        {
+            entity.Nome = dto.Nome;
+            entity.Endereco = dto.Endereco;
+            entity.Cidade = dto.Cidade;
+            entity.Estado = dto.Estado.ToUpper(); // Garantir que está em maiúsculo
+            entity.CEP = dto.CEP;
+        }
+
+        /// <summary>
+        /// Converte FilialEntity para FilialResponseDto (básico)
+        /// </summary>
+        /// <param name="entity">Entidade da filial</param>
+        /// <returns>DTO de resposta básico</returns>
+        public static FilialResponseDto ToResponseDto(FilialEntity entity)
+        {
+            return new FilialResponseDto
+            {
+                IdFilial = entity.IdFilial,
+                Nome = entity.Nome,
+                Endereco = entity.Endereco,
+                Cidade = entity.Cidade,
+                Estado = entity.Estado,
+                CEP = entity.CEP
+            };
+        }
+
+        /// <summary>
+        /// Converte FilialEntity para FilialDetailResponseDto (com relacionamentos)
+        /// </summary>
+        /// <param name="entity">Entidade da filial com relacionamentos carregados</param>
+        /// <returns>DTO de resposta detalhado</returns>
+        public static FilialDetailResponseDto ToDetailResponseDto(FilialEntity entity)
+        {
+            var dto = new FilialDetailResponseDto
+            {
+                IdFilial = entity.IdFilial,
+                Nome = entity.Nome,
+                Endereco = entity.Endereco,
+                Cidade = entity.Cidade,
+                Estado = entity.Estado,
+                CEP = entity.CEP
+            };
+
+            // Mapear funcionários se estiverem carregados
+            if (entity.Funcionarios?.Any() == true)
+            {
+                dto.Funcionarios = entity.Funcionarios.Select(f => new FuncionarioSummaryDto
+                {
+                    IdFuncionario = f.IdFuncionario,
+                    Nome = f.Nome,
+                    Email = f.Email,
+                    Funcao = f.Funcao
+                }).ToList();
+            }
+
+            // Mapear motos se estiverem carregadas
+            if (entity.Motos?.Any() == true)
+            {
+                dto.Motos = entity.Motos.Select(m => new MotoSummaryDto
+                {
+                    IdMoto = m.IdMoto,
+                    Marca = m.Marca,
+                    Modelo = m.Modelo,
+                    Placa = m.Placa,
+                    Ano = m.Ano
+                }).ToList();
+            }
+
+            // Calcular estatísticas
+            dto.Stats = new FilialStatsDto
+            {
+                TotalFuncionarios = entity.Funcionarios?.Count ?? 0,
+                TotalMotos = entity.Motos?.Count ?? 0
+            };
+
+            return dto;
+        }
+
+        /// <summary>
+        /// Converte lista de FilialEntity para lista de FilialResponseDto
+        /// </summary>
+        /// <param name="entities">Lista de entidades</param>
+        /// <returns>Lista de DTOs de resposta</returns>
+        public static List<FilialResponseDto> ToResponseDtoList(IEnumerable<FilialEntity> entities)
+        {
+            return entities.Select(ToResponseDto).ToList();
+        }
+
+        /// <summary>
+        /// Converte DataPage de FilialEntity para PagedResponseDto de FilialResponseDto
+        /// </summary>
+        /// <param name="dataPage">Página de dados das entidades</param>
+        /// <returns>Resposta paginada de DTOs</returns>
+        public static PagedResponseDto<FilialResponseDto> ToPagedResponseDto(DataPage<FilialEntity> dataPage)
+        {
+            var dtos = ToResponseDtoList(dataPage.Data);
+            
+            var pagedResponse = new PagedResponseDto<FilialResponseDto>(
+                dtos,
+                dataPage.PageNumber,
+                dataPage.PageSize,
+                dataPage.TotalItems
+            );
+
+            // Copiar links HATEOAS se existirem
+            foreach (var link in dataPage.Links)
+            {
+                pagedResponse.Links[link.Key] = link.Value;
+            }
+
+            return pagedResponse;
+        }
+
+        /// <summary>
+        /// Converte FilialEntity para FilialSummaryDto (para uso em outras entidades)
+        /// </summary>
+        /// <param name="entity">Entidade da filial</param>
+        /// <returns>DTO resumido</returns>
+        public static DTOs.Funcionario.FilialSummaryDto ToSummaryDto(FilialEntity entity)
+        {
+            return new DTOs.Funcionario.FilialSummaryDto
+            {
+                IdFilial = entity.IdFilial,
+                Nome = entity.Nome,
+                Cidade = entity.Cidade,
+                Estado = entity.Estado
+            };
+        }
+
+        /// <summary>
+        /// Converte FilialEntity para FilialSummaryDto para Motos
+        /// </summary>
+        /// <param name="entity">Entidade da filial</param>
+        /// <returns>DTO resumido para uso em Motos</returns>
+        public static DTOs.Motos.FilialSummaryDto ToMotoFilialSummaryDto(FilialEntity entity)
+        {
+            return new DTOs.Motos.FilialSummaryDto
+            {
+                IdFilial = entity.IdFilial,
+                Nome = entity.Nome,
+                Cidade = entity.Cidade,
+                Estado = entity.Estado
+            };
+        }
+
+        /// <summary>
+        /// Adiciona links HATEOAS ao DTO de resposta da filial
+        /// </summary>
+        /// <param name="dto">DTO de resposta</param>
+        /// <param name="baseUrl">URL base da API</param>
+        public static void AddHateoasLinks(FilialResponseDto dto, string baseUrl)
+        {
+            dto.Links["self"] = $"{baseUrl}/filiais/{dto.IdFilial}";
+            dto.Links["update"] = $"{baseUrl}/filiais/{dto.IdFilial}";
+            dto.Links["delete"] = $"{baseUrl}/filiais/{dto.IdFilial}";
+            dto.Links["funcionarios"] = $"{baseUrl}/filiais/{dto.IdFilial}/funcionarios";
+            dto.Links["motos"] = $"{baseUrl}/filiais/{dto.IdFilial}/motos";
+            dto.Links["stats"] = $"{baseUrl}/filiais/{dto.IdFilial}/stats";
+            dto.Links["all"] = $"{baseUrl}/filiais";
+        }
+
+        /// <summary>
+        /// Adiciona links HATEOAS ao DTO de resposta detalhado da filial
+        /// </summary>
+        /// <param name="dto">DTO de resposta detalhado</param>
+        /// <param name="baseUrl">URL base da API</param>
+        public static void AddHateoasLinks(FilialDetailResponseDto dto, string baseUrl)
+        {
+            // Links básicos
+            AddHateoasLinks((FilialResponseDto)dto, baseUrl);
+            
+            // Links específicos para funcionários
+            foreach (var funcionario in dto.Funcionarios)
+            {
+                dto.Links[$"funcionario_{funcionario.IdFuncionario}"] = $"{baseUrl}/funcionarios/{funcionario.IdFuncionario}";
+            }
+            
+            // Links específicos para motos
+            foreach (var moto in dto.Motos)
+            {
+                dto.Links[$"moto_{moto.IdMoto}"] = $"{baseUrl}/motos/{moto.IdMoto}";
+            }
+        }
+
+        /// <summary>
+        /// Adiciona links HATEOAS a uma lista de DTOs
+        /// </summary>
+        /// <param name="dtos">Lista de DTOs</param>
+        /// <param name="baseUrl">URL base da API</param>
+        public static void AddHateoasLinks(IEnumerable<FilialResponseDto> dtos, string baseUrl)
+        {
+            foreach (var dto in dtos)
+            {
+                AddHateoasLinks(dto, baseUrl);
+            }
+        }
+    }
+}

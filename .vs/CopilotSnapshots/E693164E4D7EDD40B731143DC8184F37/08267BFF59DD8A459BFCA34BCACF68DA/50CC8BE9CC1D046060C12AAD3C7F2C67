@@ -1,0 +1,417 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using MottoMap.Data.Repository;
+using MottoMap.DTOs.Motos;
+using MottoMap.DTOs.Common;
+using MottoMap.Mappers;
+using MottoMap.Models;
+
+namespace MottoMap.Controllers
+{
+    /// <summary>
+    /// Controller para gerenciamento de motos
+    /// </summary>
+    [ApiController]
+    [Route("api/v1/[controller]")]
+    [Produces("application/json")]
+    [Tags("??? Motos")]
+    public class MotosController : ControllerBase
+    {
+        private readonly IMotosRepository _motosRepository;
+        private readonly IFilialRepository _filialRepository;
+
+        public MotosController(
+            IMotosRepository motosRepository,
+            IFilialRepository filialRepository)
+        {
+            _motosRepository = motosRepository;
+            _filialRepository = filialRepository;
+        }
+
+        /// <summary>
+        /// Obtém todas as motos com paginação e filtros avançados
+        /// </summary>
+        /// <param name="paginationParameters">Parâmetros de paginação e busca</param>
+        /// <param name="filter">Filtros específicos para motos</param>
+        /// <returns>Lista paginada de motos</returns>
+        /// <remarks>
+        /// Exemplo de requisições:
+        /// 
+        ///     GET /api/v1/motos?pageNumber=1&amp;pageSize=10&amp;searchTerm=honda
+        ///     GET /api/v1/motos?marca=Honda&amp;ano=2023&amp;quilometragemMin=1000&amp;quilometragemMax=50000
+        /// 
+        /// **Filtros disponíveis:**
+        /// - **marca**: Filtrar por marca específica
+        /// - **ano**: Filtrar por ano de fabricação
+        /// - **idFilial**: Filtrar por filial
+        /// - **quilometragemMin/Max**: Filtrar por faixa de quilometragem
+        /// 
+        /// **Busca textual (searchTerm):**
+        /// Busca por marca, modelo, placa, cor ou nome da filial
+        /// 
+        /// **Ordenação (sortBy):**
+        /// marca, modelo, ano, placa, cor, quilometragem, filial
+        /// </remarks>
+        /// <response code="200">Lista de motos retornada com sucesso</response>
+        /// <response code="400">Parâmetros inválidos</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(PagedResponseDto<MotoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PagedResponseDto<MotoResponseDto>>> GetAllAsync(
+            [FromQuery] PaginationParameters paginationParameters,
+            [FromQuery] MotoFilterDto filter)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.SelectMany(x => x.Value!.Errors)
+                    .Select(x => new ValidationErrorDto { Message = x.ErrorMessage })
+                    .ToList();
+                return BadRequest(PaginationMapper.CreateValidationError(errors));
+            }
+
+            // Validar filtros de quilometragem
+            if (filter.QuilometragemMin.HasValue && filter.QuilometragemMax.HasValue &&
+                filter.QuilometragemMin > filter.QuilometragemMax)
+            {
+                return BadRequest(PaginationMapper.CreateError(
+                    "INVALID_RANGE", 
+                    "Quilometragem mínima não pode ser maior que a máxima"));
+            }
+
+            DataPage<MotosEntity> dataPage;
+
+            // Aplicar filtros específicos se fornecidos
+            if (!string.IsNullOrWhiteSpace(filter.Marca))
+            {
+                dataPage = await _motosRepository.GetByMarcaAsync(filter.Marca, paginationParameters);
+            }
+            else if (filter.Ano.HasValue)
+            {
+                dataPage = await _motosRepository.GetByAnoAsync(filter.Ano.Value, paginationParameters);
+            }
+            else if (filter.IdFilial.HasValue)
+            {
+                dataPage = await _motosRepository.GetByFilialAsync(filter.IdFilial.Value, paginationParameters);
+            }
+            else if (filter.QuilometragemMin.HasValue || filter.QuilometragemMax.HasValue)
+            {
+                var min = filter.QuilometragemMin ?? 0;
+                var max = filter.QuilometragemMax ?? int.MaxValue;
+                dataPage = await _motosRepository.GetByQuilometragemRangeAsync(min, max, paginationParameters);
+            }
+            else
+            {
+                dataPage = await _motosRepository.GetAllAsync(paginationParameters);
+            }
+
+            var response = MotoMapper.ToPagedResponseDto(dataPage);
+
+            // Adicionar links HATEOAS
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+            var queryParams = PaginationMapper.ToQueryParameters(paginationParameters);
+            
+            // Adicionar parâmetros de filtro aos links
+            if (!string.IsNullOrWhiteSpace(filter.Marca))
+                queryParams["marca"] = filter.Marca;
+            if (filter.Ano.HasValue)
+                queryParams["ano"] = filter.Ano.Value.ToString();
+            if (filter.IdFilial.HasValue)
+                queryParams["idFilial"] = filter.IdFilial.Value.ToString();
+            if (filter.QuilometragemMin.HasValue)
+                queryParams["quilometragemMin"] = filter.QuilometragemMin.Value.ToString();
+            if (filter.QuilometragemMax.HasValue)
+                queryParams["quilometragemMax"] = filter.QuilometragemMax.Value.ToString();
+
+            PaginationMapper.AddNavigationLinks(response, baseUrl, queryParams);
+            MotoMapper.AddHateoasLinks(response.Data, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Obtém uma moto específica por ID
+        /// </summary>
+        /// <param name="id">ID da moto</param>
+        /// <returns>Dados da moto</returns>
+        /// <response code="200">Moto encontrada</response>
+        /// <response code="404">Moto não encontrada</response>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(MotoResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<MotoResponseDto>> GetByIdAsync(int id)
+        {
+            var moto = await _motosRepository.GetByIdAsync(id);
+            if (moto == null)
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "MOTO_NOT_FOUND", 
+                    $"Moto com ID {id} não foi encontrada"));
+            }
+
+            var response = MotoMapper.ToResponseDto(moto);
+            MotoMapper.AddHateoasLinks(response, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Cria uma nova moto
+        /// </summary>
+        /// <param name="createDto">Dados da moto a ser criada</param>
+        /// <returns>Moto criada</returns>
+        /// <response code="201">Moto criada com sucesso</response>
+        /// <response code="400">Dados inválidos</response>
+        /// <response code="409">Placa já existe</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(MotoResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<MotoResponseDto>> CreateAsync(
+            [FromBody] CreateMotoDto createDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.SelectMany(x => x.Value!.Errors)
+                    .Select(x => new ValidationErrorDto { Message = x.ErrorMessage })
+                    .ToList();
+                return BadRequest(PaginationMapper.CreateValidationError(errors));
+            }
+
+            // Verificar se a filial existe
+            if (!await _filialRepository.ExistsAsync(createDto.IdFilial))
+            {
+                return BadRequest(PaginationMapper.CreateError(
+                    "FILIAL_NOT_FOUND", 
+                    $"Filial com ID {createDto.IdFilial} não foi encontrada"));
+            }
+
+            // Formatar e verificar se a placa já existe
+            var placaFormatada = MotoMapper.FormatPlaca(createDto.Placa);
+            if (await _motosRepository.PlacaExistsAsync(placaFormatada))
+            {
+                return Conflict(PaginationMapper.CreateError(
+                    "PLACA_ALREADY_EXISTS", 
+                    $"Placa {placaFormatada} já está em uso"));
+            }
+
+            var entity = MotoMapper.ToEntity(createDto);
+            entity.Placa = placaFormatada; // Garantir formatação correta
+            
+            var createdEntity = await _motosRepository.AddAsync(entity);
+            var response = MotoMapper.ToResponseDto(createdEntity);
+            
+            MotoMapper.AddHateoasLinks(response, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return CreatedAtAction(
+                nameof(GetByIdAsync), 
+                new { id = response.IdMoto }, 
+                response);
+        }
+
+        /// <summary>
+        /// Atualiza uma moto existente
+        /// </summary>
+        /// <param name="id">ID da moto</param>
+        /// <param name="updateDto">Dados atualizados da moto</param>
+        /// <returns>Moto atualizada</returns>
+        /// <response code="200">Moto atualizada com sucesso</response>
+        /// <response code="400">Dados inválidos</response>
+        /// <response code="404">Moto não encontrada</response>
+        /// <response code="409">Placa já existe</response>
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(MotoResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<MotoResponseDto>> UpdateAsync(
+            int id, 
+            [FromBody] UpdateMotoDto updateDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.SelectMany(x => x.Value!.Errors)
+                    .Select(x => new ValidationErrorDto { Message = x.ErrorMessage })
+                    .ToList();
+                return BadRequest(PaginationMapper.CreateValidationError(errors));
+            }
+
+            var existingEntity = await _motosRepository.GetByIdAsync(id);
+            if (existingEntity == null)
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "MOTO_NOT_FOUND", 
+                    $"Moto com ID {id} não foi encontrada"));
+            }
+
+            // Verificar se a filial existe
+            if (!await _filialRepository.ExistsAsync(updateDto.IdFilial))
+            {
+                return BadRequest(PaginationMapper.CreateError(
+                    "FILIAL_NOT_FOUND", 
+                    $"Filial com ID {updateDto.IdFilial} não foi encontrada"));
+            }
+
+            // Formatar e verificar se a placa já existe para outra moto
+            var placaFormatada = MotoMapper.FormatPlaca(updateDto.Placa);
+            if (await _motosRepository.PlacaExistsAsync(placaFormatada, id))
+            {
+                return Conflict(PaginationMapper.CreateError(
+                    "PLACA_ALREADY_EXISTS", 
+                    $"Placa {placaFormatada} já está em uso"));
+            }
+
+            MotoMapper.UpdateEntity(existingEntity, updateDto);
+            existingEntity.Placa = placaFormatada; // Garantir formatação correta
+            
+            var updatedEntity = await _motosRepository.UpdateAsync(existingEntity);
+            var response = MotoMapper.ToResponseDto(updatedEntity);
+            
+            MotoMapper.AddHateoasLinks(response, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Remove uma moto
+        /// </summary>
+        /// <param name="id">ID da moto</param>
+        /// <returns>Confirmação de remoção</returns>
+        /// <response code="204">Moto removida com sucesso</response>
+        /// <response code="404">Moto não encontrada</response>
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            if (!await _motosRepository.ExistsAsync(id))
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "MOTO_NOT_FOUND", 
+                    $"Moto com ID {id} não foi encontrada"));
+            }
+
+            await _motosRepository.DeleteAsync(id);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Busca moto por placa
+        /// </summary>
+        /// <param name="placa">Placa da moto</param>
+        /// <returns>Dados da moto</returns>
+        /// <response code="200">Moto encontrada</response>
+        /// <response code="404">Moto não encontrada</response>
+        [HttpGet("placa/{placa}")]
+        [ProducesResponseType(typeof(MotoResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<MotoResponseDto>> GetByPlacaAsync(string placa)
+        {
+            var placaFormatada = MotoMapper.FormatPlaca(placa);
+            var moto = await _motosRepository.GetByPlacaAsync(placaFormatada);
+            
+            if (moto == null)
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "MOTO_NOT_FOUND", 
+                    $"Moto com placa {placaFormatada} não foi encontrada"));
+            }
+
+            var response = MotoMapper.ToResponseDto(moto);
+            MotoMapper.AddHateoasLinks(response, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Obtém motos por filial
+        /// </summary>
+        /// <param name="idFilial">ID da filial</param>
+        /// <param name="paginationParameters">Parâmetros de paginação</param>
+        /// <returns>Lista paginada de motos da filial</returns>
+        /// <response code="200">Lista de motos da filial</response>
+        /// <response code="404">Filial não encontrada</response>
+        [HttpGet("filial/{idFilial}")]
+        [ProducesResponseType(typeof(PagedResponseDto<MotoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PagedResponseDto<MotoResponseDto>>> GetByFilialAsync(
+            int idFilial,
+            [FromQuery] PaginationParameters paginationParameters)
+        {
+            if (!await _filialRepository.ExistsAsync(idFilial))
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "FILIAL_NOT_FOUND", 
+                    $"Filial com ID {idFilial} não foi encontrada"));
+            }
+
+            var dataPage = await _motosRepository.GetByFilialAsync(idFilial, paginationParameters);
+            var response = MotoMapper.ToPagedResponseDto(dataPage);
+
+            // Adicionar links HATEOAS
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+            var queryParams = PaginationMapper.ToQueryParameters(paginationParameters);
+            PaginationMapper.AddNavigationLinks(response, baseUrl, queryParams);
+            MotoMapper.AddHateoasLinks(response.Data, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Obtém motos por marca
+        /// </summary>
+        /// <param name="marca">Marca das motos</param>
+        /// <param name="paginationParameters">Parâmetros de paginação</param>
+        /// <returns>Lista paginada de motos da marca</returns>
+        /// <response code="200">Lista de motos da marca</response>
+        [HttpGet("marca/{marca}")]
+        [ProducesResponseType(typeof(PagedResponseDto<MotoResponseDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResponseDto<MotoResponseDto>>> GetByMarcaAsync(
+            string marca,
+            [FromQuery] PaginationParameters paginationParameters)
+        {
+            var dataPage = await _motosRepository.GetByMarcaAsync(marca, paginationParameters);
+            var response = MotoMapper.ToPagedResponseDto(dataPage);
+
+            // Adicionar links HATEOAS
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+            var queryParams = PaginationMapper.ToQueryParameters(paginationParameters);
+            PaginationMapper.AddNavigationLinks(response, baseUrl, queryParams);
+            MotoMapper.AddHateoasLinks(response.Data, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Obtém motos por ano
+        /// </summary>
+        /// <param name="ano">Ano das motos</param>
+        /// <param name="paginationParameters">Parâmetros de paginação</param>
+        /// <returns>Lista paginada de motos do ano</returns>
+        /// <response code="200">Lista de motos do ano</response>
+        /// <response code="400">Ano inválido</response>
+        [HttpGet("ano/{ano}")]
+        [ProducesResponseType(typeof(PagedResponseDto<MotoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PagedResponseDto<MotoResponseDto>>> GetByAnoAsync(
+            int ano,
+            [FromQuery] PaginationParameters paginationParameters)
+        {
+            if (ano < 1900 || ano > 2030)
+            {
+                return BadRequest(PaginationMapper.CreateError(
+                    "INVALID_YEAR", 
+                    "Ano deve estar entre 1900 e 2030"));
+            }
+
+            var dataPage = await _motosRepository.GetByAnoAsync(ano, paginationParameters);
+            var response = MotoMapper.ToPagedResponseDto(dataPage);
+
+            // Adicionar links HATEOAS
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+            var queryParams = PaginationMapper.ToQueryParameters(paginationParameters);
+            PaginationMapper.AddNavigationLinks(response, baseUrl, queryParams);
+            MotoMapper.AddHateoasLinks(response.Data, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+    }
+}

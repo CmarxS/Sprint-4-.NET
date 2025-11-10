@@ -1,0 +1,294 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using MottoMap.Data.Repository;
+using MottoMap.DTOs.Funcionario;
+using MottoMap.DTOs.Common;
+using MottoMap.Mappers;
+using MottoMap.Models;
+using System.ComponentModel.DataAnnotations;
+
+namespace MottoMap.Controllers
+{
+    /// <summary>
+    /// Controller para gerenciamento de funcionários
+    /// </summary>
+    [ApiController]
+    [Route("api/v1/[controller]")]
+    [Produces("application/json")]
+    [Tags("👨‍💼 Funcionários")]
+    public class FuncionariosController : ControllerBase
+    {
+        private readonly IFuncionarioRepository _funcionarioRepository;
+        private readonly IFilialRepository _filialRepository;
+
+        public FuncionariosController(
+            IFuncionarioRepository funcionarioRepository,
+            IFilialRepository filialRepository)
+        {
+            _funcionarioRepository = funcionarioRepository;
+            _filialRepository = filialRepository;
+        }
+
+        /// <summary>
+        /// Obtém todos os funcionários com paginação
+        /// </summary>
+        /// <param name="paginationParameters">Parâmetros de paginação e filtros</param>
+        /// <returns>Lista paginada de funcionários</returns>
+        /// <remarks>
+        /// Exemplo de requisição:
+        /// 
+        ///     GET /api/v1/funcionarios?pageNumber=1&amp;pageSize=10&amp;searchTerm=joão&amp;sortBy=nome&amp;sortDirection=asc
+        /// 
+        /// Parâmetros de busca disponíveis:
+        /// - **searchTerm**: Busca por nome, email, função ou nome da filial
+        /// - **sortBy**: Campos disponíveis: nome, email, funcao, filial
+        /// - **sortDirection**: asc ou desc
+        /// </remarks>
+        /// <response code="200">Lista de funcionários retornada com sucesso</response>
+        /// <response code="400">Parâmetros de paginação inválidos</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(PagedResponseDto<FuncionarioResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PagedResponseDto<FuncionarioResponseDto>>> GetAllAsync(
+            [FromQuery] PaginationParameters paginationParameters)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.SelectMany(x => x.Value!.Errors)
+                    .Select(x => new ValidationErrorDto { Message = x.ErrorMessage })
+                    .ToList();
+                return BadRequest(PaginationMapper.CreateValidationError(errors));
+            }
+
+            var dataPage = await _funcionarioRepository.GetAllAsync(paginationParameters);
+            var response = FuncionarioMapper.ToPagedResponseDto(dataPage);
+
+            // Adicionar links HATEOAS
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+            var queryParams = PaginationMapper.ToQueryParameters(paginationParameters);
+            PaginationMapper.AddNavigationLinks(response, baseUrl, queryParams);
+            FuncionarioMapper.AddHateoasLinks(response.Data, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Obtém um funcionário específico por ID
+        /// </summary>
+        /// <param name="id">ID do funcionário</param>
+        /// <returns>Dados do funcionário</returns>
+        /// <response code="200">Funcionário encontrado</response>
+        /// <response code="404">Funcionário não encontrado</response>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(FuncionarioResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<FuncionarioResponseDto>> GetByIdAsync(int id)
+        {
+            var funcionario = await _funcionarioRepository.GetByIdAsync(id);
+            if (funcionario == null)
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "FUNCIONARIO_NOT_FOUND", 
+                    $"Funcionário com ID {id} não foi encontrado"));
+            }
+
+            var response = FuncionarioMapper.ToResponseDto(funcionario);
+            FuncionarioMapper.AddHateoasLinks(response, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Cria um novo funcionário
+        /// </summary>
+        /// <param name="createDto">Dados do funcionário a ser criado</param>
+        /// <returns>Funcionário criado</returns>
+        /// <response code="201">Funcionário criado com sucesso</response>
+        /// <response code="400">Dados inválidos</response>
+        /// <response code="409">Email já existe</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(FuncionarioResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<FuncionarioResponseDto>> CreateAsync(
+            [FromBody] CreateFuncionarioDto createDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.SelectMany(x => x.Value!.Errors)
+                    .Select(x => new ValidationErrorDto { Message = x.ErrorMessage })
+                    .ToList();
+                return BadRequest(PaginationMapper.CreateValidationError(errors));
+            }
+
+            // Verificar se a filial existe
+            if (!await _filialRepository.ExistsAsync(createDto.IdFilial))
+            {
+                return BadRequest(PaginationMapper.CreateError(
+                    "FILIAL_NOT_FOUND", 
+                    $"Filial com ID {createDto.IdFilial} não foi encontrada"));
+            }
+
+            // Verificar se o email já existe
+            if (await _funcionarioRepository.EmailExistsAsync(createDto.Email))
+            {
+                return Conflict(PaginationMapper.CreateError(
+                    "EMAIL_ALREADY_EXISTS", 
+                    $"Email {createDto.Email} já está em uso"));
+            }
+
+            var entity = FuncionarioMapper.ToEntity(createDto);
+            var createdEntity = await _funcionarioRepository.AddAsync(entity);
+            var response = FuncionarioMapper.ToResponseDto(createdEntity);
+            
+            FuncionarioMapper.AddHateoasLinks(response, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return CreatedAtAction(
+                nameof(GetByIdAsync), 
+                new { id = response.IdFuncionario }, 
+                response);
+        }
+
+        /// <summary>
+        /// Atualiza um funcionário existente
+        /// </summary>
+        /// <param name="id">ID do funcionário</param>
+        /// <param name="updateDto">Dados atualizados do funcionário</param>
+        /// <returns>Funcionário atualizado</returns>
+        /// <response code="200">Funcionário atualizado com sucesso</response>
+        /// <response code="400">Dados inválidos</response>
+        /// <response code="404">Funcionário não encontrado</response>
+        /// <response code="409">Email já existe</response>
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(FuncionarioResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<FuncionarioResponseDto>> UpdateAsync(
+            int id, 
+            [FromBody] UpdateFuncionarioDto updateDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.SelectMany(x => x.Value!.Errors)
+                    .Select(x => new ValidationErrorDto { Message = x.ErrorMessage })
+                    .ToList();
+                return BadRequest(PaginationMapper.CreateValidationError(errors));
+            }
+
+            var existingEntity = await _funcionarioRepository.GetByIdAsync(id);
+            if (existingEntity == null)
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "FUNCIONARIO_NOT_FOUND", 
+                    $"Funcionário com ID {id} não foi encontrado"));
+            }
+
+            // Verificar se a filial existe
+            if (!await _filialRepository.ExistsAsync(updateDto.IdFilial))
+            {
+                return BadRequest(PaginationMapper.CreateError(
+                    "FILIAL_NOT_FOUND", 
+                    $"Filial com ID {updateDto.IdFilial} não foi encontrada"));
+            }
+
+            // Verificar se o email já existe para outro funcionário
+            if (await _funcionarioRepository.EmailExistsAsync(updateDto.Email, id))
+            {
+                return Conflict(PaginationMapper.CreateError(
+                    "EMAIL_ALREADY_EXISTS", 
+                    $"Email {updateDto.Email} já está em uso"));
+            }
+
+            FuncionarioMapper.UpdateEntity(existingEntity, updateDto);
+            var updatedEntity = await _funcionarioRepository.UpdateAsync(existingEntity);
+            var response = FuncionarioMapper.ToResponseDto(updatedEntity);
+            
+            FuncionarioMapper.AddHateoasLinks(response, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Remove um funcionário
+        /// </summary>
+        /// <param name="id">ID do funcionário</param>
+        /// <returns>Confirmação de remoção</returns>
+        /// <response code="204">Funcionário removido com sucesso</response>
+        /// <response code="404">Funcionário não encontrado</response>
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            if (!await _funcionarioRepository.ExistsAsync(id))
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "FUNCIONARIO_NOT_FOUND", 
+                    $"Funcionário com ID {id} não foi encontrado"));
+            }
+
+            await _funcionarioRepository.DeleteAsync(id);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Obtém funcionários por filial
+        /// </summary>
+        /// <param name="idFilial">ID da filial</param>
+        /// <param name="paginationParameters">Parâmetros de paginação</param>
+        /// <returns>Lista paginada de funcionários da filial</returns>
+        /// <response code="200">Lista de funcionários da filial</response>
+        /// <response code="404">Filial não encontrada</response>
+        [HttpGet("filial/{idFilial}")]
+        [ProducesResponseType(typeof(PagedResponseDto<FuncionarioResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PagedResponseDto<FuncionarioResponseDto>>> GetByFilialAsync(
+            int idFilial,
+            [FromQuery] PaginationParameters paginationParameters)
+        {
+            if (!await _filialRepository.ExistsAsync(idFilial))
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "FILIAL_NOT_FOUND", 
+                    $"Filial com ID {idFilial} não foi encontrada"));
+            }
+
+            var dataPage = await _funcionarioRepository.GetByFilialAsync(idFilial, paginationParameters);
+            var response = FuncionarioMapper.ToPagedResponseDto(dataPage);
+
+            // Adicionar links HATEOAS
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}";
+            var queryParams = PaginationMapper.ToQueryParameters(paginationParameters);
+            PaginationMapper.AddNavigationLinks(response, baseUrl, queryParams);
+            FuncionarioMapper.AddHateoasLinks(response.Data, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Busca funcionário por email
+        /// </summary>
+        /// <param name="email">Email do funcionário</param>
+        /// <returns>Dados do funcionário</returns>
+        /// <response code="200">Funcionário encontrado</response>
+        /// <response code="404">Funcionário não encontrado</response>
+        [HttpGet("email/{email}")]
+        [ProducesResponseType(typeof(FuncionarioResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<FuncionarioResponseDto>> GetByEmailAsync(string email)
+        {
+            var funcionario = await _funcionarioRepository.GetByEmailAsync(email);
+            if (funcionario == null)
+            {
+                return NotFound(PaginationMapper.CreateError(
+                    "FUNCIONARIO_NOT_FOUND", 
+                    $"Funcionário com email {email} não foi encontrado"));
+            }
+
+            var response = FuncionarioMapper.ToResponseDto(funcionario);
+            FuncionarioMapper.AddHateoasLinks(response, $"{Request.Scheme}://{Request.Host}/api/v1");
+
+            return Ok(response);
+        }
+    }
+}
