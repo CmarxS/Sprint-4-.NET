@@ -1,6 +1,8 @@
-# 🚗 MottoMap API
+# 🏍 MottoMap API
 
 Sistema de Gestão Inteligente de Frota de Motos - API REST completa desenvolvida em .NET 8.0 com Machine Learning, Entity Framework Core e Oracle Database.
+
+OBS: O projeto de testes com xUnit foi enviado separadamente em um .zip pois tivemos problemas com o Visual Studio para integrá-lo onde não conseguimos superar. Portanto foi enviada aqui para o github uma versão onde a aplicação principal da API realiza o build corretamente e o Testes.zip para que, se possível, tenha alguma validação. Desde já agradeço a compreensão :)
 
 ## 👨‍💻 Equipe de Desenvolvimento
 
